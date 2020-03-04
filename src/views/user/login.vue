@@ -41,12 +41,15 @@
         round：圆边效果
         block：块级样式设置，占据一行
       -->
-      <van-button type="info" size="small" round block>登录</van-button>
+      <van-button type="info" size="small" round block @click="login()">登录</van-button>
     </div>
   </div>
 </template>
 
 <script>
+// 导入登录请求的api
+import { apiUserLogin } from '@/api/user.js'
+
 export default {
   name: 'user-login',
   data () {
@@ -54,9 +57,33 @@ export default {
       // 登录表单数据对象
       // mobile和code是"api数据接口"告诉的，不是自定义的
       loginForm: {
-        mobile: '', // 手机号码
-        code: '' // 验证码
+        mobile: '13911111111', // 手机号码
+        code: '246810' // 验证码
       }
+    }
+  },
+  methods: {
+    async login () {
+      // apiUserLogin函数执行有可能成功、也有可能失败，请try、catch判断使用
+      try {
+        // 校验账号有效性
+        // 所有api函数返回结果就是axios返回结果，就是Promise对象
+        await apiUserLogin(this.loginForm)
+        // api函数执行成功代表账号正确
+        // 如果报400的错误信息，代表账号错误，并且是致命错误，会阻止后续程序代码运行
+        // 因此，判断账号是否正确，不用通过result返回值，需要try/catch介入
+        // console.log(result)  // {token:xxx, refresh_token:xxx}
+      } catch (err) {
+        // 账号错误，$toast.fail()是vant组件库提供的"错误提示"应用语法
+        // 与element-ui提供的 $message.error()是对应的
+        // return 表示停止后续代码执行
+        return this.$toast.fail('手机号或验证码错误' + err)
+      }
+
+      // 登录成功的提示信息
+      this.$toast.success('登录成功')
+      // 跳转到首页
+      this.$router.push('/home')
     }
   }
 }
