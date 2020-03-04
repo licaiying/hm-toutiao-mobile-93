@@ -68,11 +68,14 @@ export default {
       try {
         // 校验账号有效性
         // 所有api函数返回结果就是axios返回结果，就是Promise对象
-        await apiUserLogin(this.loginForm)
+        const result = await apiUserLogin(this.loginForm)
         // api函数执行成功代表账号正确
         // 如果报400的错误信息，代表账号错误，并且是致命错误，会阻止后续程序代码运行
         // 因此，判断账号是否正确，不用通过result返回值，需要try/catch介入
         // console.log(result)  // {token:xxx, refresh_token:xxx}
+
+        // 通过vuex维护服务器端返回的token等秘钥信息
+        this.$store.commit('updateUser', result)
       } catch (err) {
         // 账号错误，$toast.fail()是vant组件库提供的"错误提示"应用语法
         // 与element-ui提供的 $message.error()是对应的
