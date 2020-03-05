@@ -36,7 +36,8 @@
         形式：slot-scope="stData"
         （v-slot与 slot-scope作用相似，用于接收插槽数据）
        -->
-      <ValidationProvider rules="required" name="手机号" v-slot="{ errors }">
+       <!-- 注意: required|phone ,|竖线 左右不要设置空格 -->
+      <ValidationProvider rules="required|phone" name="手机号" v-slot="{ errors }">
          <!-- :error-message:给输入框设置表达校验错误信息 -->
         <van-field
           v-model="loginForm.mobile"

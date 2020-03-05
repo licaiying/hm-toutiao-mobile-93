@@ -24,3 +24,19 @@ localize('zhCN')
 Object.keys(rules).forEach(rule => {
   extend(rule, rules[rule])
 })
+
+// 配置自定义校验规则
+// phone：规则名称
+// value：被校验的数据
+// message:错误提示信息
+extend('phone', {
+  validate: value => {
+    // 校验成功返回true，否则返回false
+    // 定义手机正则，匹配
+    const reg = /^1[35789]\d{9}$/
+    return reg.test(value)
+    // return value % 2 !== 0;
+  },
+  // {_field_} 代表 ValidationProvider 的name属性值
+  message: '{_field_}格式不正确'
+})
