@@ -76,7 +76,15 @@
         round：圆边效果
         block：块级样式设置，占据一行
       -->
-      <van-button type="info" size="small" round block @click="login()">登录</van-button>
+      <van-button
+        type="info"
+        size="small"
+        round
+        block
+        @click="login()"
+        :loading="isLogin"
+        loading-text="登录中"
+      >登录</van-button>
     </div>
   </div>
 </template>
@@ -97,6 +105,9 @@ export default {
   },
   data () {
     return {
+      // “登录”按钮，是否处于“登录中”的状态  false：不是“登录中”的状态
+      isLogin: false,
+
       // 登录表单数据对象
       // mobile和code是"api数据接口"告诉的，不是自定义的
       loginForm: {
@@ -108,12 +119,16 @@ export default {
   methods: {
     async login () {
       // 对全部表单进行校验
+      // validate()方法调用完毕后会返回一个Promise对象，所以可用await进行修饰
       const valid = await this.$refs.loginFormRef.validate()
-      console.log(valid) // false 校验失败   true 校验成功
+      // console.log(valid) // false 校验失败   true 校验成功
       if (!valid) {
         // 校验失败，停止后续代码的执行
         return false
       }
+
+      // 当全部的表单项都校验完毕后，“登录”按钮可显示“登录中”的状态
+      this.isLogin = true
 
       // apiUserLogin函数执行有可能成功、也有可能失败，请try、catch判断使用
       try {
@@ -128,11 +143,17 @@ export default {
         // 通过vuex维护服务器端返回的token等秘钥信息
         this.$store.commit('updateUser', result)
       } catch (err) {
+        // 登录失败时，登录按钮也不显示“登录中”的状态
+        this.isLogin = false
+
         // 账号错误，$toast.fail()是vant组件库提供的"错误提示"应用语法
         // 与element-ui提供的 $message.error()是对应的
         // return 表示停止后续代码执行
         return this.$toast.fail('手机号或验证码错误' + err)
       }
+
+      // 成功登录后，恢复按钮的状态
+      this.isLogin = false
 
       // 登录成功的提示信息
       this.$toast.success('登录成功')
