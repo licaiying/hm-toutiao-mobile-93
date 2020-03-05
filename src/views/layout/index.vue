@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+     <!--头部导航-->
     <!-- 公共头部
     van-nav-bar是 导航栏组件，
     title：导航中间呈现内容
@@ -14,6 +15,7 @@
       <router-view></router-view>
     </div>
 
+  <!--底部导航-->
     <!-- 公共脚步
       van-tabbar:标签栏组件
       van-tabbar: route  激活路由功能
