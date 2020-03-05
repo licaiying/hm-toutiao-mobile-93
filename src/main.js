@@ -14,6 +14,9 @@ import 'amfe-flexible/index.min.js'
 // 注意：在vant的css样式导入之后设置,目的是：为了覆盖vant的样式
 import '@/assets/css/global.less'
 
+// 导入校验规则注册文件，其不是模块，不用起名字接收，本质就是引入执行而已
+import '@/utils/validate.js'
+
 Vue.use(Vant)
 
 Vue.config.productionTip = false
