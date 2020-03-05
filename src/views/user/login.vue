@@ -12,7 +12,7 @@
         clearable：表单域内容可以通过右侧“叉号”清除
       -->
 
-          <!--van-field 输入框表单域组件
+      <!--van-field 输入框表单域组件
         label="手机号" 表单域前边的名字设置
         required：不进行校验，设置表单域前边有"红星"
         clearable：表单域内容可以通过右侧“叉号”清除
@@ -35,37 +35,39 @@
 
         形式：slot-scope="stData"
         （v-slot与 slot-scope作用相似，用于接收插槽数据）
-       -->
-       <!-- 注意: required|phone ,|竖线 左右不要设置空格 -->
-      <ValidationProvider rules="required|phone" name="手机号" v-slot="{ errors }">
-         <!-- :error-message:给输入框设置表达校验错误信息 -->
-        <van-field
-          v-model="loginForm.mobile"
-          type="tel"
-          placeholder="请输入手机号码"
-          label="手机号"
-          required
-          clearable
-          :error-message="errors[0]"
-        />
-      </ValidationProvider>
-      <ValidationProvider rules="required" name="验证码" v-slot="{ errors }">
-        <van-field
-          v-model="loginForm.code"
-          type="password"
-          placeholder="请输入验证码"
-          label="验证码"
-          required
-          clearable
-          :error-message="errors[0]"
-        >
-          <!-- "命名插槽"应用，提示相关按钮，是要给van-field组件内部的slot去填充的
+      -->
+      <!-- 注意: required|phone ,|竖线 左右不要设置空格 -->
+      <ValidationObserver ref="loginFormRef">
+        <ValidationProvider rules="required|phone" name="手机号" v-slot="{ errors }">
+          <!-- :error-message:给输入框设置表达校验错误信息 -->
+          <van-field
+            v-model="loginForm.mobile"
+            type="tel"
+            placeholder="请输入手机号码"
+            label="手机号"
+            required
+            clearable
+            :error-message="errors[0]"
+          />
+        </ValidationProvider>
+        <ValidationProvider rules="required" name="验证码" v-slot="{ errors }">
+          <van-field
+            v-model="loginForm.code"
+            type="password"
+            placeholder="请输入验证码"
+            label="验证码"
+            required
+            clearable
+            :error-message="errors[0]"
+          >
+            <!-- "命名插槽"应用，提示相关按钮，是要给van-field组件内部的slot去填充的
         size="small" 设置按钮大小的
         type="primary" 设置按钮背景颜色
-          -->
-          <van-button slot="button" size="small" type="primary">发送验证码</van-button>
-        </van-field>
-      </ValidationProvider>
+            -->
+            <van-button slot="button" size="small" type="primary">发送验证码</van-button>
+          </van-field>
+        </ValidationProvider>
+      </ValidationObserver>
     </van-cell-group>
     <div class="login-btn">
       <!--van-button
@@ -84,13 +86,14 @@
 import { apiUserLogin } from '@/api/user.js'
 
 // 导入表单验证的相关模块
-import { ValidationProvider } from 'vee-validate'
+import { ValidationProvider, ValidationObserver } from 'vee-validate'
 
 export default {
   name: 'user-login',
   components: {
     // 注册验证模块
-    ValidationProvider
+    ValidationProvider,
+    ValidationObserver
   },
   data () {
     return {
@@ -104,6 +107,14 @@ export default {
   },
   methods: {
     async login () {
+      // 对全部表单进行校验
+      const valid = await this.$refs.loginFormRef.validate()
+      console.log(valid) // false 校验失败   true 校验成功
+      if (!valid) {
+        // 校验失败，停止后续代码的执行
+        return false
+      }
+
       // apiUserLogin函数执行有可能成功、也有可能失败，请try、catch判断使用
       try {
         // 校验账号有效性
