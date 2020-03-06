@@ -15,7 +15,33 @@
       <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
         <!-- van-cell：单元格组件，独占一行，显示每一条数据 -->
         <!-- art_id:是超大整形数据，是数字类型，需要转换为字符串 -->
-        <van-cell v-for="item in articleList" :key="item.art_id.toString()" :title="item.title" />
+        <van-cell v-for="item in articleList" :key="item.art_id.toString()" :title="item.title">
+          <!-- 通过命名插槽方式体现单元格下方描述信息 -->
+          <template slot="label">
+            <!-- 宫格组价 -->
+            <!-- 封面图片类型：没有type=0、 1个type=1、 3个type=3 -->
+            <!-- 新闻封面图片也是通过label描述位置体现
+                 :column-num 根据type的值决定显示的列数
+                 v-if="item.cover.type>0" 要求type>0才体现宫格
+                 :border="false" 宫格没有边框
+            -->
+            <van-grid :border="false" v-if="item.cover.type>0" :column-num="item.cover.type">
+              <van-grid-item v-for="(item2,k2) in item.cover.images" :key="k2">
+                <!-- 图片信息 -->
+                <van-image width="90" height="90" :src="item2" />
+              </van-grid-item>
+            </van-grid>
+            <!-- 文字描述信息 -->
+            <p>
+              <span>作者:{{item.aut_name}}</span>
+              &nbsp;
+              <span>评论 :{{item.comm_count}}</span>
+              &nbsp;
+              <span>时间:{{item.pubdate}}</span>
+              &nbsp;
+            </p>
+          </template>
+        </van-cell>
       </van-list>
     </van-pull-refresh>
   </div>
