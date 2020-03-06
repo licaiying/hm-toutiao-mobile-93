@@ -14,13 +14,17 @@
       -->
       <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
         <!-- van-cell：单元格组件，独占一行，显示每一条数据 -->
-        <van-cell v-for="item in list" :key="item" :title="item" />
+        <!-- art_id:是超大整形数据，是数字类型，需要转换为字符串 -->
+        <van-cell v-for="item in articleList" :key="item.art_id.toString()" :title="item.title" />
       </van-list>
     </van-pull-refresh>
   </div>
 </template>
 
 <script type="text/javascript">
+// 导入封装好的获取文章数据的api函数
+import { apiArticleList } from '@/api/article.js'
+
 export default {
   name: 'com-article',
   // 1.简单方式--接收父组件传递参数
@@ -34,6 +38,12 @@ export default {
   },
   data () {
     return {
+      // 文章列表数据
+      articleList: [],
+
+      // 时间戳参数，通过ts声明时间戳条件，这样后期可以灵活发生变化
+      ts: Date.now(), // 时间戳是文章列表分页的条件
+
       // 上拉--瀑布流相关成员
       list: [], // 数据展示的数据源
       loading: false, // 是否处于加载状态，默认先“不加载”
@@ -43,7 +53,23 @@ export default {
       isLoading: false // 加载状态，默认不加载
     }
   },
+  created () {
+    this.getArticleList()
+  },
   methods: {
+    // 获取文章数据
+    async getArticleList () {
+      // 调用api函数
+      // 参数对象
+      const obj = {
+        channel_id: this.channelID,
+        timestamp: this.ts
+      }
+      const result = await apiArticleList(obj)
+      // console.log(result)
+      this.articleList = result.results
+    },
+
     // 上拉--瀑布流执行的函数
     onLoad () {
       // 异步更新数据
