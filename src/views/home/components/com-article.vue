@@ -77,6 +77,9 @@ export default {
 
     // 上拉--瀑布流执行的函数
     async onLoad () {
+      // 设置加载时的延迟效果
+      await this.$sleep(1000)
+
       // 1.调用getArticleList()函数，获取文章数据
       // articles就是getArticleList()函数，return出来的结果，即articles = result
       const articles = await this.getArticleList()
