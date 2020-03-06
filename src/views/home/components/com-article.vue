@@ -67,26 +67,55 @@ export default {
       }
       const result = await apiArticleList(obj)
       // console.log(result)
-      this.articleList = result.results
+      // this.articleList = result.results
+
+      // 不要将获取到的结果直接赋值给articleList,因为这样只会渲染10条数据，不会有上拉刷新，加载更多数据的结果
+      // 将获取到的数据return出去，给上拉刷新的函数使用
+      // 注意点：因为该函数，是async修饰的，所以return出去的也是一个Promise对象，需要async修饰
+      return result
     },
 
     // 上拉--瀑布流执行的函数
-    onLoad () {
+    async onLoad () {
+      // 1.调用getArticleList()函数，获取文章数据
+      // articles就是getArticleList()函数，return出来的结果，即articles = result
+      const articles = await this.getArticleList()
+
+      // 2.对获取的数据做处理
+      // articleList接收数据，要设置"追加"，不要直接赋值
+      // 直接赋值会使得瀑布的数据区域填充不满，会造成瀑布不断加载的效果
+      // articles.results = result.results
+      // articles.results:[{id,title,xx},{id,title,xx},{id,title,}……]
+      // ...articles.results:是展开运算符，将results里面的对象成员暴露出来，进而被push追加使用
+      // this.articleList.push({id,title,xx},{id,title,xx},{id,title,}……)
+      if (articles.results.length > 0) {
+        this.articleList.push(...articles.results)
+
+        // 更新时间戳，方便获取"下一页"数据
+        this.ts = articles.pre_timestamp
+      } else {
+        // 若没有数据可追加，说明已全部加载完成，修改finished的值为true
+        this.finished = true
+      }
+
+      // 3.获取到数据后，停止动画的加载效果
+      this.loading = false
+
       // 异步更新数据
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
+      // setTimeout(() => {
+      //   for (let i = 0; i < 10; i++) {
+      //     this.list.push(this.list.length + 1)
+      //   }
 
-        // 加载状态结束
-        this.loading = false
+      //   // 加载状态结束
+      //   this.loading = false
 
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true // 数据已全部加载完毕，将finished改为true
-        }
-      }, 1000)
+      //   // 数据全部加载完成
+      //   if (this.list.length >= 40) {
+      //     this.finished = true // 数据已全部加载完毕，将finished改为true
+      //   }
+      // }, 1000)
     },
 
     // 下拉--执行的函数
