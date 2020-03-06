@@ -23,6 +23,15 @@
 <script type="text/javascript">
 export default {
   name: 'com-article',
+  // 1.简单方式--接收父组件传递参数
+  // props:['channelID'],
+  // 2.高级方式--接收父组件传递参数
+  props: {
+    channelID: {
+      type: Number, // 接收的参数类型，若参数类型不对，则接收不到数据  类型有：Number、String、Array
+      required: true // 是否必须接收,true表示必须接收
+    }
+  },
   data () {
     return {
       // 上拉--瀑布流相关成员

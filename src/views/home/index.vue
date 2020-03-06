@@ -9,7 +9,8 @@
     -->
     <van-tabs v-model="activeChannelIndex">
       <van-tab v-for="item in channelList" :key="item.id" :title="item.name">
-        <com-article></com-article>
+        <!-- 绑定频道id，以获取对应的文章数据,子组件要通过props接收频道的id参数 -->
+        <com-article :channelID="item.id"></com-article>
       </van-tab>
     </van-tabs>
   </div>
