@@ -21,6 +21,14 @@ import '@/assets/css/global.less'
 // 导入校验规则注册文件，其不是模块，不用起名字接收，本质就是引入执行而已
 import '@/utils/validate.js'
 
+// 导入全局过滤器
+import * as filters from '@/utils/filters/index.js'
+
+// 注册全局过滤器
+Object.keys(filters).forEach(item => {
+  Vue.filter(item, filters[item])
+})
+
 Vue.use(Vant)
 
 Vue.use(Lazyload)
