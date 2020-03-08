@@ -28,7 +28,8 @@
             <van-grid :border="false" v-if="item.cover.type>0" :column-num="item.cover.type">
               <van-grid-item v-for="(item2,k2) in item.cover.images" :key="k2">
                 <!-- 图片信息 -->
-                <van-image width="90" height="90" :src="item2" />
+                <!-- lazy-load:是图片组件(van-image)提供的属性 -->
+                <van-image width="90" height="90" :src="item2" lazy-load />
               </van-grid-item>
             </van-grid>
             <!-- 文字描述信息 -->

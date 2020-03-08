@@ -3,8 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-// 导入vant
-import Vant from 'vant'
+// 导入vant,图片懒加载(Lazyload)
+// 导入,Vant是默认的成员导入，Lazyload是按需成员导入
+// eslint要求：同一个功能包的不同模块对象要使用一个语句导入进来
+// 默认、按需同时导入 import XXX,{YYY,KKK,MMM} from '模块'
+// 注意：默认在前，按需在后
+import Vant, { Lazyload } from 'vant'
 import 'vant/lib/index.css'
 
 // 导入配置font-size的基准值文件
@@ -18,6 +22,8 @@ import '@/assets/css/global.less'
 import '@/utils/validate.js'
 
 Vue.use(Vant)
+
+Vue.use(Lazyload)
 
 // 【全局延迟器】
 // 设置一个【全局延迟器】，是Vue的继承成员，名称为$sleep，就是"自定义"的
