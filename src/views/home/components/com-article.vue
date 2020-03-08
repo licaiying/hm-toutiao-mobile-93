@@ -35,7 +35,7 @@
             <!-- 文字描述信息 -->
             <!--  van-icon:图标组件   name="close"代表叉号 -->
             <p>
-              <van-icon name="close" style="float:right" />
+              <van-icon name="close" style="float:right" @click="displayDialog()" />
               <span>作者:{{item.aut_name}}</span>
               &nbsp;
               <span>评论 :{{item.comm_count}}</span>
@@ -47,6 +47,9 @@
         </van-cell>
       </van-list>
     </van-pull-refresh>
+    <!-- 使用弹出框组件 -->
+    <!-- v-model:是否显示弹框，是Dialog组件提供的属性 值为布尔值  true：显示  false：不显示 -->
+    <more-action v-model="showDialog"></more-action>
   </div>
 </template>
 
@@ -54,11 +57,17 @@
 // 导入封装好的获取文章数据的api函数
 import { apiArticleList } from '@/api/article.js'
 
+// 导入“弹出框”子组件
+import MoreAction from './com-moreaction.vue'
+
 export default {
   name: 'com-article',
   // 1.简单方式--接收父组件传递参数
   // props:['channelID'],
   // 2.高级方式--接收父组件传递参数
+  components: {
+    MoreAction
+  },
   props: {
     channelID: {
       type: Number, // 接收的参数类型，若参数类型不对，则接收不到数据  类型有：Number、String、Array
@@ -67,6 +76,9 @@ export default {
   },
   data () {
     return {
+      // 是否显示“弹出框”
+      showDialog: false, // 默认先‘不显示’
+
       // 文章列表数据
       articleList: [],
 
@@ -86,6 +98,11 @@ export default {
     this.getArticleList()
   },
   methods: {
+    // 弹出框显示的处理函数
+    displayDialog () {
+      this.showDialog = true
+    },
+
     // 获取文章数据
     async getArticleList () {
       // 调用api函数
