@@ -53,7 +53,11 @@
     </van-pull-refresh>
     <!-- 使用弹出框组件 -->
     <!-- v-model:是否显示弹框，是Dialog组件提供的属性 值为布尔值  true：显示  false：不显示 -->
-    <more-action v-model="showDialog" :articleID="nowArticleID"></more-action>
+    <more-action
+      v-model="showDialog"
+      :articleID="nowArticleID"
+      @dislikeSuccess="handleDislikeSuccess"
+    ></more-action>
   </div>
 </template>
 
@@ -105,6 +109,18 @@ export default {
     this.getArticleList()
   },
   methods: {
+    // 对“不感兴趣”文章的处理函数
+    handleDislikeSuccess () {
+      // 根据文章的id找到其在文章列表中对应的索引值，实现对该文章的删除操作
+      // findIndex()是数组的一个方法，可以通过条件获得指定目标在数组列表中的"下标序号"，有遍历机制
+      const index = this.articleList.findIndex(item => {
+      // 满足条件就return为true信息出来，那么当前项目的下标序号就获得的到了
+        return item.art_id.toString() === this.nowArticleID
+      })
+      // 根据索引值，从文章列表中删除文章(只是页面级删除)
+      this.articleList.splice(index, 1)
+    },
+
     // 弹出框显示的处理函数
     displayDialog (artID) {
       this.showDialog = true

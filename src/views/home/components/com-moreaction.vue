@@ -64,8 +64,12 @@ export default {
   methods: {
     // 对不感兴趣文章的处理函数
     async articleDislike () {
-      const result = await apiArticleDislike(this.articleID)
-      console.log(result)
+      // 调用api
+      await apiArticleDislike(this.articleID)
+      //   console.log(result)
+      this.$toast.success('处理成功') // 成功的提示信息
+      this.$emit('input', false) // 关闭弹出框,修改父组件的showDialog的值为false，进而影响子组件关闭弹框
+      this.$emit('dislikeSuccess') // 调用子组件自己的事件，实现对不感兴趣文章的删除
     }
   }
 }
