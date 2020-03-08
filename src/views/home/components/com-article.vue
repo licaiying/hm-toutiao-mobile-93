@@ -33,7 +33,9 @@
               </van-grid-item>
             </van-grid>
             <!-- 文字描述信息 -->
+            <!--  van-icon:图标组件   name="close"代表叉号 -->
             <p>
+              <van-icon name="close" style="float:right" />
               <span>作者:{{item.aut_name}}</span>
               &nbsp;
               <span>评论 :{{item.comm_count}}</span>
