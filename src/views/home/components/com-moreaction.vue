@@ -19,7 +19,7 @@
       <van-cell-group v-if="isOneLevel">
         <van-cell title="不感兴趣" icon="location-o" @click="articleDislike()" />
         <van-cell title="反馈垃圾内容" icon="location-o" is-link @click="isOneLevel=false" />
-        <van-cell title="拉黑作者" icon="location-o" />
+        <van-cell title="拉黑作者" icon="location-o" @click="lahei()" />
       </van-cell-group>
 
       <!-- 二级弹框 -->
@@ -62,7 +62,7 @@ export default {
     }
   },
   methods: {
-    // 对不感兴趣文章的处理函数
+    // 1.对不感兴趣文章的处理函数
     async articleDislike () {
       // 调用api
       await apiArticleDislike(this.articleID)
@@ -70,6 +70,15 @@ export default {
       this.$toast.success('处理成功') // 成功的提示信息
       this.$emit('input', false) // 关闭弹出框,修改父组件的showDialog的值为false，进而影响子组件关闭弹框
       this.$emit('dislikeSuccess') // 调用子组件自己的事件，实现对不感兴趣文章的删除
+    },
+
+    // 2."拉黑作者"的处理函数
+    async lahei () {
+      // 调用api(与“不感兴趣”的api是同一个)
+      await apiArticleDislike(this.articleID) // 发请求
+      this.$toast.success('拉黑作者成功') // 成功的提示信息
+      this.$emit('input', false) // 关闭弹出框,修改父组件的showDialog的值为false，进而影响子组件关闭弹框
+      this.$emit('dislikeSuccess') // 调用子组件自己的事件，实现对拉黑作者的文章的删除操作
     }
   }
 }
