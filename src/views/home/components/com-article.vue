@@ -35,7 +35,11 @@
             <!-- 文字描述信息 -->
             <!--  van-icon:图标组件   name="close"代表叉号 -->
             <p>
-              <van-icon name="close" style="float:right" @click="displayDialog()" />
+              <van-icon
+                name="close"
+                style="float:right"
+                @click="displayDialog(item.art_id.toString())"
+              />
               <span>作者:{{item.aut_name}}</span>
               &nbsp;
               <span>评论 :{{item.comm_count}}</span>
@@ -49,7 +53,7 @@
     </van-pull-refresh>
     <!-- 使用弹出框组件 -->
     <!-- v-model:是否显示弹框，是Dialog组件提供的属性 值为布尔值  true：显示  false：不显示 -->
-    <more-action v-model="showDialog"></more-action>
+    <more-action v-model="showDialog" :articleID="nowArticleID"></more-action>
   </div>
 </template>
 
@@ -76,6 +80,9 @@ export default {
   },
   data () {
     return {
+      // 对应弹出框的文章的id
+      nowArticleID: '', // 不感兴趣的文章的id
+
       // 是否显示“弹出框”
       showDialog: false, // 默认先‘不显示’
 
@@ -99,8 +106,9 @@ export default {
   },
   methods: {
     // 弹出框显示的处理函数
-    displayDialog () {
+    displayDialog (artID) {
       this.showDialog = true
+      this.nowArticleID = artID // 函数接收对应文章的id，并赋值给子组件标签
     },
 
     // 获取文章数据

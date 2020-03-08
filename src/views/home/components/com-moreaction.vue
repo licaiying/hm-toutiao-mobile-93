@@ -17,7 +17,7 @@
     >
       <!-- 一级弹框 -->
       <van-cell-group v-if="isOneLevel">
-        <van-cell title="不感兴趣" icon="location-o" />
+        <van-cell title="不感兴趣" icon="location-o" @click="articleDislike()" />
         <van-cell title="反馈垃圾内容" icon="location-o" is-link @click="isOneLevel=false" />
         <van-cell title="拉黑作者" icon="location-o" />
       </van-cell-group>
@@ -40,17 +40,32 @@
 </template>
 
 <script type="text/javascript">
+// 调用处理“不感兴趣”文章的api函数
+import { apiArticleDislike } from '@/api/article.js'
+
 export default {
   name: 'more-action',
   props: {
     value: {
       type: Boolean,
       default: false
+    },
+    articleID: {
+      type: String,
+      required: true,
+      default: ''
     }
   },
   data () {
     return {
       isOneLevel: true // 控制一级、二级弹框的显示，默认先显示“一级弹框”
+    }
+  },
+  methods: {
+    // 对不感兴趣文章的处理函数
+    async articleDislike () {
+      const result = await apiArticleDislike(this.articleID)
+      console.log(result)
     }
   }
 }
