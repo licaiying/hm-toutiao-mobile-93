@@ -13,7 +13,7 @@
            slot="nav-left/right" 图标放置的位置
            class="channel-more"  下述设置css样式
       -->
-      <div slot="nav-right" class="channel-more">
+      <div slot="nav-right" class="channel-more" @click="showPopup=true">
         <van-icon name="wap-nav" />
       </div>
       <van-tab v-for="item in channelList" :key="item.id" :title="item.name">
@@ -21,6 +21,9 @@
         <com-article :channelID="item.id"></com-article>
       </van-tab>
     </van-tabs>
+
+    <!-- 应用 三杠按钮 组件 -->
+    <com-channel v-model="showPopup"></com-channel>
   </div>
 </template>
 
@@ -31,13 +34,20 @@ import ComArticle from './components/com-article.vue'
 // 导入获取频道数据的api函数
 import { apiChannelList } from '@/api/channel.js'
 
+// 导入“三杠按钮”的弹出层组件
+import ComChannel from './components/com-channel'
+
 export default {
   name: 'home-index',
   components: {
-    ComArticle
+    ComArticle,
+    ComChannel
   },
   data () {
     return {
+      // 控制三杠按钮弹出层的显示
+      showPopup: false,
+
       // 设置频道默认激活项目
       activeChannelIndex: 0,
 
@@ -82,7 +92,7 @@ export default {
     background-color: #1989fa;
   }
 
-    /*给 更多 频道设置样式*/
+  /*给 更多 频道设置样式*/
   .channel-more {
     position: fixed;
     right: 0;
