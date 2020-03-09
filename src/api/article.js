@@ -28,3 +28,16 @@ export function apiArticleDislike (articleID) {
     }
   })
 }
+
+// 3.导出一个“举报文章”的api函数
+export function apiArticleReport ({ articleID, type, remark = '' }) {
+  return request({
+    url: '/app/v1_0/article/reports',
+    method: 'post',
+    data: {
+      target: articleID,
+      type,
+      remark
+    }
+  })
+}
