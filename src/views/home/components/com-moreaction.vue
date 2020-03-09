@@ -95,22 +95,26 @@ export default {
 
     // 3.举报文章的处理函数
     async articleReport (type) {
-      // 因为举报文章有可能失败，会返回409的状态码，表示文章已经举报过了
-      // 所以，需要使用try、catch 捕获错误信息
-      // obj：发请求时，需要传递的参数信息对象，根据api接口获知
-      // try/catch 可以对服务器返回的异常信息进行捕捉，如果不设置，会造成程序中断执行
+      // api执行，目标文章id已经被父组件传递过来的，即 this.articleID
+      // 举报过的文章，不删除，还显示，因此当前文章有机会被重复举报
+      // 而服务器端针对重复举报文章要返回409的错误状态码
+
+      // 举报结果：成功、失败 两种结果都会存在
+      // 如果返回409状态码(是一个致命错误)，api函数执行就停止了，后续代码也就不执行了，所以要感知409的话，不能使用if，相反要使用try/catch(其可以捕捉致命错误，代码不会执行)
       try {
-        const obj = { articleID: this.articleID, type }
-        await apiArticleReport(obj)
+        const args = { articleID: this.articleID, type }
+        await apiArticleReport(args)
       } catch (err) {
+        // console.dir(err)
+        // err.response.status===409
         if (err.response.status === 409) {
           // return:停止后续代码的执行
           return this.$toast.fail('文章已经被举报过了')
         }
       }
-      // 成功的提示信息
+      // 提示成功
       this.$toast.success('文章举报成功')
-      // 关闭弹框
+      // 关闭弹出框
       this.$emit('input', false)
     }
   }

@@ -78,7 +78,7 @@ instance.interceptors.response.use(function (res) {
 }, function (error) {
   // 非正常响应处理(包括401)
   // console.dir(error) // 对象： config request response isAxiosError toJSON
-  if (error.res.status === 401) {
+  if (error.response.status === 401) {
     // token不ok(token在服务器端已经失效了，2个小时时效)
     // 强制用户重新登录系统，以刷新服务器端的token失效
     router.push('/login')

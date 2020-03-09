@@ -4,8 +4,16 @@
     <!-- 下拉功能 -->
     <!-- v-model="isLoading"：是设置下拉状态的  true：正在加载  false：加载完成
          @refresh="onRefresh"：当发生下拉事件时执行的函数，可以实现数据的获取
+
+         :success-text="successText" 下拉动作完成后的信息提示[已经是最新的了/文章更新成功]
+         success-duration="1500 下拉动作完成后的信息提示 停留时间
     -->
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+    <van-pull-refresh
+      v-model="isLoading"
+      @refresh="onRefresh"
+      :success-text="successText"
+      success-duration="1500"
+    >
       <!-- 上拉功能 -->
       <!-- v-model="loading" 数据加载时的效果
                :finished="finished"  数据是否加载完毕，若加载完毕finished 为true
@@ -84,6 +92,9 @@ export default {
   },
   data () {
     return {
+      // 下拉更新完成的提示信息
+      successText: '',
+
       // 对应弹出框的文章的id
       nowArticleID: '', // 不感兴趣的文章的id
 
@@ -114,7 +125,7 @@ export default {
       // 根据文章的id找到其在文章列表中对应的索引值，实现对该文章的删除操作
       // findIndex()是数组的一个方法，可以通过条件获得指定目标在数组列表中的"下标序号"，有遍历机制
       const index = this.articleList.findIndex(item => {
-      // 满足条件就return为true信息出来，那么当前项目的下标序号就获得的到了
+        // 满足条件就return为true信息出来，那么当前项目的下标序号就获得的到了
         return item.art_id.toString() === this.nowArticleID
       })
       // 根据索引值，从文章列表中删除文章(只是页面级删除)
@@ -192,12 +203,31 @@ export default {
     },
 
     // 下拉--执行的函数
-    onRefresh () {
-      setTimeout(() => {
-        this.onLoad() // 调用上拉函数，获得数据
-        this.$toast.success('刷新成功') // 下拉加载成功的提示信息
-        this.isLoading = false // 下拉加载完成后，结束加载动画
-      }, 1000)
+    async onRefresh () {
+      // 延迟器1秒
+      await this.$sleep(1000)
+
+      // 获得文章数据
+      const articles = await this.getArticleList()
+      if (articles.results.length > 0) {
+        this.articleList.unshift(...articles.results)
+        // 更新时间戳
+        this.ts = articles.pre_timestamp
+        // 提示信息
+        this.successText = '文章更新成功'
+      } else {
+        // 提示：已经是最新的了
+        this.successText = '文章已经是最新的了'
+      }
+
+      // 结束加载动画
+      this.isLoading = false
+
+      // setTimeout(() => {
+      //   this.onLoad() // 调用上拉函数，获得数据
+      //   this.$toast.success('刷新成功') // 下拉加载成功的提示信息
+      //   this.isLoading = false // 下拉加载完成后，结束加载动画
+      // }, 1000)
     }
   }
 }
