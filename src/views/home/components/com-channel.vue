@@ -32,8 +32,17 @@
         </div>
         <!--van-grid 没有设置column-num属性，默认是4列-->
         <van-grid class="channel-content" :gutter="10" clickable>
-          <van-grid-item v-for="value in 8" :key="value">
-            <span class="text">文字</span>
+             <!-- grid-item宫格单元
+                  宫格内容表现：
+                  1. text属性,设置简单内容
+                  2. 匿名插槽，设置复杂内容
+             -->
+          <van-grid-item
+            v-for="(item,k) in channelList"
+            :key="item.id"
+            :style="{color:k===activeChannelIndex?'red':''}"
+          >
+            <span class="text">{{item.name}}</span>
             <!-- <van-icon class="close-icon" name="close" /> -->
           </van-grid-item>
         </van-grid>
@@ -66,6 +75,21 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    // 接收父组件传递的“我的频道”列表数据
+    channelList: {
+      type: Array,
+      // 数组的默认值要通过函数functon方式设置,箭头函数也可以
+      // default:()=>{
+      //     return []
+      // }
+      // 以上代码可简写为如下
+      default: () => []
+    },
+    // 接收父组件传递的当前激活频道的下标
+    activeChannelIndex: {
+      type: Number,
+      default: 0
     }
   }
 }
@@ -73,7 +97,7 @@ export default {
 
 <style scoped lang="less" >
 .channel {
-  margin-top:70px;
+  margin-top: 70px;
   .channel-head {
     display: flex;
     justify-content: space-between;
@@ -85,7 +109,7 @@ export default {
     }
     .desc {
       font-size: 16px;
-      color:gray;
+      color: gray;
     }
   }
   .channel-content {

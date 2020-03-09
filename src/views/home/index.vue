@@ -23,7 +23,15 @@
     </van-tabs>
 
     <!-- 应用 三杠按钮 组件 -->
-    <com-channel v-model="showPopup"></com-channel>
+    <!-- 频道操作
+         :channelList="channelList" 把当前用户拥有的频道传递给频道组件里边显示
+         :activeChannelIndex="activeChannelIndex" 当前激活频道项目的下标
+    -->
+    <com-channel
+      v-model="showPopup"
+      :channelList="channelList"
+      :activeChannelIndex="activeChannelIndex"
+    ></com-channel>
   </div>
 </template>
 
