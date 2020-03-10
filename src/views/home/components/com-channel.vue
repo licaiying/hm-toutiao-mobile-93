@@ -51,6 +51,7 @@
             v-for="(item,k) in channelList"
             :key="item.id"
             :style="{color:k===activeChannelIndex?'red':''}"
+            @click="clkChannel(k)"
           >
             <span class="text">{{item.name}}</span>
             <!-- 叉号按钮图标
@@ -189,6 +190,17 @@ export default {
         // 当前子组件要去修改父组件的成员属性
         this.$emit('update:activeChannelIndex', index - 1)
       }
+    },
+
+    // 4.频道激活的操作函数
+    clkChannel (index) {
+      // A.激活频道后，弹出层消失(借助父组件的v-model使得本身弹出层关闭)
+      this.$emit('input', false)
+
+      // B.父组件的页面同样做添加操作
+      // 激活的是哪个频道，就将哪个频道对应的下标传递给父组件，使其也实现添加操作
+      // 当前频道激活，子要修改父的activeChannelIndex成员，使得激活项目变化，所以需使用update(子使用)/sync(父使用)
+      this.$emit('update:activeChannelIndex', index)
     }
   }
 }
