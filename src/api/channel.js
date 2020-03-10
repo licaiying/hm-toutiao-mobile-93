@@ -77,3 +77,27 @@ export async function apiChannelAdd (channel) {
   // 因为不需要返回一个具体的数据，所以返回一个null即可
   return null
 }
+
+// 4. 频道删除的api函数
+// 添加删除时,需将该频道的信息作为参数进行传递  channel {id:xx, name:xx}
+export async function apiChannelDel (channel) {
+  // A.根据用户是否登录系统,获得对应的localStorage操作的key
+  const key = store.state.user.token ? CHANNEL_KET_VIP : CHANNEL_KEY_TRAVEL
+
+  // B.若是登录状态，就将存储的数据获取出来
+  const cachechannels = JSON.parse(localStorage.getItem(key))
+
+  // C.对拥有的频道做删除操作，从cacheChannels里边去除channel项目
+  // 通过使用数组的filter()方法来实现，返回被过滤掉的数据
+  // 即：返回，不包括 已经删除的频道 的全部频道数据
+  const tmpChannels = cachechannels.filter(item => {
+    return item.id !== channel.id // channel:就是被删除的频道数据
+  })
+
+  // D.将已经过滤完成的数据再存储到本地了
+  localStorage.setItem(key, JSON.stringify(tmpChannels))
+
+  // E.通过 return 返回一个 Promise对象,方便应用端使用该api函数
+  // 因为不需要返回一个具体的数据，所以返回一个null即可
+  return null
+}
