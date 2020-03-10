@@ -47,11 +47,14 @@
                   1. text属性,设置简单内容
                   2. 匿名插槽，设置复杂内容
           -->
+          <!-- 当前频道激活,要传递下标序号参数: @click="clkChannel(k)"
+               兼顾删除，需要传递频道item参数: @click="clkChannel(item)"
+          -->
           <van-grid-item
             v-for="(item,k) in channelList"
             :key="item.id"
             :style="{color:k===activeChannelIndex?'red':''}"
-            @click="clkChannel(k)"
+            @click="clkChannel(item,k)"
           >
             <span class="text">{{item.name}}</span>
             <!-- 叉号按钮图标
@@ -193,7 +196,13 @@ export default {
     },
 
     // 4.频道激活的操作函数
-    clkChannel (index) {
+    clkChannel (channel, index) {
+      // 如果是编辑状态，并且不是推荐项目，就执行删除逻辑
+      if (this.isEdit && index > 0) {
+        // return 停止后续代码执行
+        return this.userToRest(channel, index)
+      }
+
       // A.激活频道后，弹出层消失(借助父组件的v-model使得本身弹出层关闭)
       this.$emit('input', false)
 
