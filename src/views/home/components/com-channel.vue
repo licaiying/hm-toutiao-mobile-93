@@ -182,6 +182,13 @@ export default {
 
       // B.localStorage中的持久删除
       apiChannelDel(channel)
+
+      // C.判断删除的如果是最后一个项目，并且还是被激活的状态，就设置前一个项目激活
+      if (index === this.channelList.length && this.activeChannelIndex === index) {
+        // 设置activeChannelIndex = index-1(前一个项目被激活选中)
+        // 当前子组件要去修改父组件的成员属性
+        this.$emit('update:activeChannelIndex', index - 1)
+      }
     }
   }
 }

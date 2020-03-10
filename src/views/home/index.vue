@@ -26,11 +26,12 @@
     <!-- 频道操作
          :channelList="channelList" 把当前用户拥有的频道传递给频道组件里边显示
          :activeChannelIndex="activeChannelIndex" 当前激活频道项目的下标
+         给activeChannelIndex设置sync调用，表示允许子组件修改父组件的数据
     -->
     <com-channel
       v-model="showPopup"
       :channelList="channelList"
-      :activeChannelIndex="activeChannelIndex"
+      :activeChannelIndex.sync="activeChannelIndex"
     ></com-channel>
   </div>
 </template>
