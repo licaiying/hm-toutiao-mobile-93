@@ -9,6 +9,8 @@
           closeable  有关闭按钮
           close-icon-position="top-left"  按钮在左上角显示
           round 有圆角
+          closed: 组件提供的事件，关闭弹出层且动画结束后触发
+                  当弹出层关闭时，我的频道 的状态为 非编辑 状态
     -->
     <van-popup
       :value="value"
@@ -18,6 +20,7 @@
       close-icon-position="top-left"
       position="bottom"
       :style="{ height: '90%' }"
+      @closed="isEdit=false"
     >
       <!-- 弹出层页面布局 -->
       <div class="channel">
@@ -27,7 +30,14 @@
             <span class="desc">点击进入频道</span>
           </div>
           <div>
-            <van-button type="danger" plain size="mini" round>编辑</van-button>
+            <!-- 点击的时候，切换编辑按钮的状态 @click="isEdit=!isEdit" 并做相应的按钮的显示内容-->
+            <van-button
+              type="danger"
+              plain
+              size="mini"
+              round
+              @click="isEdit=!isEdit"
+            >{{isEdit?'完成':'编辑'}}</van-button>
           </div>
         </div>
         <!--van-grid 没有设置column-num属性，默认是4列-->
@@ -46,8 +56,9 @@
             <!-- 叉号按钮图标
                  class="close-icon" 设置样式的
                  v-show="k>0" 使得 推荐 项目不显示叉号按钮
-             -->
-            <van-icon v-show="k>0" class="close-icon" name="close" />
+                 当处于编辑状态是，叉号按钮才会显示  isEdit：true 表示是编辑状态
+            -->
+            <van-icon v-show="k>0 && isEdit" class="close-icon" name="close" />
           </van-grid-item>
         </van-grid>
       </div>
@@ -104,7 +115,10 @@ export default {
   data () {
     return {
       // 全部频道数据
-      channelAll: []
+      channelAll: [],
+
+      // 控制 我的频道 的编辑状态
+      isEdit: false // 默认不是编辑状态
     }
   },
 
