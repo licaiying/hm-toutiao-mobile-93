@@ -57,7 +57,8 @@
         </div>
         <!-- clickable：是否开启格子点击反馈  true：表示开启 -->
         <van-grid class="channel-content" :gutter="10" clickable>
-          <van-grid-item v-for="item in restChannels" :key="item.id">
+          <!-- 给推荐频道绑定事件@click="restToUser(item)"  以便实现添加操作 -->
+          <van-grid-item v-for="item in restChannels" :key="item.id" @click="restToUser(item)">
             <div class="info">
               <span class="text">{{item.name}}</span>
             </div>
@@ -69,8 +70,8 @@
 </template>
 
 <script type="text/javascript">
-// 导入获取“全部频道”数据的api函数
-import { apiChannelAll } from '@/api/channel.js'
+// 导入获取“全部频道”  "添加频道" 数据的api函数
+import { apiChannelAll, apiChannelAdd } from '@/api/channel.js'
 
 export default {
   name: 'com-channel',
@@ -137,6 +138,18 @@ export default {
       const result = await apiChannelAll()
       // 全部的频道数据
       this.channelAll = result.channels
+    },
+
+    // 2.频道做添加的操作函数
+    restToUser (channel) {
+      // A.将被点击的 频道 添加到 我的频道 里
+      // 父组件的页面也要实现添加频道的功能
+      // 但是因为现在的父子组件使用了v-model的原因，子组件的数据channelList就是父组件传递过来的
+      // 所以，当子组件做了添加操作时，父组件也会做相应的添加操作
+      this.channelList.push(channel)
+
+      // B.调用添加的api，实现本地localStorage的持久添加
+      apiChannelAdd(channel)
     }
   }
 }
