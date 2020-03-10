@@ -15,7 +15,7 @@ const CHANNEL_KET_VIP = 'hm-channel-vip' // 登录用户Key
 // 给函数前边设置async，那么这个函数return返回结果以"Promise对象"形式体现
 export async function apiChannelList () {
   // 对代码做升级处理，以实现数据的本地持久化
-  // 1. 从缓存localStorage里边获得频道(注意区分用户是否有登录系统)
+  // A. 从缓存localStorage里边获得频道(注意区分用户是否有登录系统)
 
   // 根据用户是否登录系统获得对应的localStorage操作的key
   const key = store.state.user.token ? CHANNEL_KET_VIP : CHANNEL_KEY_TRAVEL
@@ -25,7 +25,7 @@ export async function apiChannelList () {
   // 是“数组对象集”，但是类型是字符串
   const cachechannels = localStorage.getItem(key)
 
-  // 2. 判断是否有缓存频道数据
+  // B. 判断是否有缓存频道数据
   if (cachechannels) {
     // 有数据，直接返回应用
     return { channels: JSON.parse(cachechannels) }
@@ -55,4 +55,25 @@ export function apiChannelAll () {
     url: '/app/v1_0/channels',
     method: 'get'
   })
+}
+
+// 3.导出一个向 我的频道 做 添加 频道的api函数
+// 添加频道时,需将该频道的信息作为参数进行传递  channel {id:xx, name:xx}
+// async:可以单独使用  await:必须和async搭配使用
+export async function apiChannelAdd (channel) {
+  // 根据用户是否登录系统,获得对应的localStorage操作的key
+  const key = store.state.user.token ? CHANNEL_KET_VIP : CHANNEL_KEY_TRAVEL
+
+  // 若是登录状态，就将存储的数据获取出来
+  const cachechannels = JSON.parse(localStorage.getItem(key))
+
+  // 向上述的数据集中添加要添加的频道数据
+  cachechannels.push(channel)
+
+  // 再将已经做完添加操作的数组集存储到本地localStorage里
+  localStorage.setItem(key, JSON.stringify(cachechannels))
+
+  // 通过 return 返回一个 Promise对象,方便应用端使用该api函数
+  // 因为不需要返回一个具体的数据，所以返回一个null即可
+  return null
 }
