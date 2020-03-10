@@ -57,8 +57,9 @@
                  class="close-icon" 设置样式的
                  v-show="k>0" 使得 推荐 项目不显示叉号按钮
                  当处于编辑状态是，叉号按钮才会显示  isEdit：true 表示是编辑状态
+                 userToRest(item {id:xx,name:xx} 用户持久删除, k 项目下标序号 内存删除)
             -->
-            <van-icon v-show="k>0 && isEdit" class="close-icon" name="close" />
+            <van-icon v-show="k>0 && isEdit" class="close-icon" @click="userToRest(item,k)" name="close" />
           </van-grid-item>
         </van-grid>
       </div>
@@ -85,8 +86,8 @@
 </template>
 
 <script type="text/javascript">
-// 导入获取“全部频道”  "添加频道" 数据的api函数
-import { apiChannelAll, apiChannelAdd } from '@/api/channel.js'
+// 导入获取“全部频道”  "添加频道" "删除频道" 的api函数
+import { apiChannelAll, apiChannelAdd, apiChannelDel } from '@/api/channel.js'
 
 export default {
   name: 'com-channel',
@@ -168,6 +169,19 @@ export default {
 
       // B.调用添加的api，实现本地localStorage的持久添加
       apiChannelAdd(channel)
+    },
+
+    // 3.频道做删除的操作函数
+    userToRest (channel, index) {
+      // 1. 对channelList做页面内存级删除，使得有响应式效果
+      //  A. 我的频道立即呈现删除效果，
+      //  B. 剩余频道会增加删除的项目，
+      //  C. 父页面home/index.vue也会体现删除效果
+      //  D.因为现在的父子组件使用了v-model的原因
+      this.channelList.splice(index, 1)
+
+      // B.localStorage中的持久删除
+      apiChannelDel(channel)
     }
   }
 }
