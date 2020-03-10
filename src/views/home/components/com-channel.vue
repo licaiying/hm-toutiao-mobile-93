@@ -43,7 +43,11 @@
             :style="{color:k===activeChannelIndex?'red':''}"
           >
             <span class="text">{{item.name}}</span>
-            <!-- <van-icon class="close-icon" name="close" /> -->
+            <!-- 叉号按钮图标
+                 class="close-icon" 设置样式的
+                 v-show="k>0" 使得 推荐 项目不显示叉号按钮
+             -->
+            <van-icon v-show="k>0" class="close-icon" name="close" />
           </van-grid-item>
         </van-grid>
       </div>
