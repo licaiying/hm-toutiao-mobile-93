@@ -14,3 +14,20 @@ export function apiSearchSuggestion (q) {
     }
   })
 }
+
+// 2.展示搜索结果的api函数
+// page：页数，不传默认为1
+// per_page：每页数量，不传每页数量由后端决定
+// q：是搜索关键词
+
+export function apiSearchList ({ q, page = 1, perPage = 10 }) {
+  return request({
+    method: 'get',
+    url: '/app/v1_0/search',
+    params: {
+      q,
+      page,
+      per_page: perPage
+    }
+  })
+}
