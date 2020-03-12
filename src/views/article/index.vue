@@ -13,7 +13,9 @@
         <van-button
           round
           size="small"
-          :type="article.is_followed?'info':'default'"
+          :type="article.is_followed?'default':'info'"
+          @click="followMe()"
+          :loading="isFollowed"
         >{{article.is_followed?'取消关注':'+ 关注'}}</van-button>
       </div>
       <div class="content">
@@ -44,6 +46,9 @@
 // 导入获取文章详情的api函数
 import { apiArticleDetail } from '@/api/article.js'
 
+// 导入 关注 和 取消关注 的api函数
+import { apiFollow, apiUnFollow } from '@/api/user.js'
+
 export default {
   // 每个组件name声明的名字【不要】与html标签重名，
   // 例如div、span、table，article、header、footer
@@ -51,14 +56,49 @@ export default {
   data () {
     return {
       // 文章详情的数据对象信息
-      article: {}
+      article: {},
+
+      isFollowed: false // 关注按钮的加载效果
     }
   },
   created () {
     this.getArticleDetail()
   },
   methods: {
-    // 获取文章的详细数据信息
+    // 2.关注/取消关注的函数
+    async followMe () {
+      // 开启按钮的‘加载中’效果
+      this.isFollowed = true
+
+      // 延迟效果
+      await this.$sleep(1000)
+
+      // 当前是‘关注’
+      if (this.article.is_followed) {
+        // 取消关注
+        await apiUnFollow(this.article.aut_id.toString())
+        // 页面更新数据，使得响应式执行
+        this.article.is_followed = false
+      } else {
+        // 关注(不是都成功，自己关注自己要失败，要做相关处理)
+        // 当前是‘取消关注’
+        try {
+          await apiFollow(this.article.aut_id.toString())
+          this.article.is_followed = true
+        } catch (err) {
+          if (err.response.status === 400) {
+            this.$toast.fail('自己不能关注自己')
+          } else {
+            this.$toast.fail('关注失败')
+          }
+        }
+      }
+
+      // 结束加载动画
+      this.isFollowed = false
+    },
+
+    // 1.获取文章的详细数据信息
     async getArticleDetail () {
       const result = await apiArticleDetail(this.$route.params.aid)
       this.article = result
