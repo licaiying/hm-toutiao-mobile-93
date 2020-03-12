@@ -3,44 +3,67 @@
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="文章详情"></van-nav-bar>
     <!-- 文章详情的列表展示区域 -->
     <div class="detail">
-      <h3 class="title">美女与野兽</h3>
+      <h3 class="title">{{article.title}}</h3>
       <div class="author">
-        <van-image
-          round
-          width="1rem"
-          height="1rem"
-          fit="fill"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
-        />
+        <van-image round width="1rem" height="1rem" fit="fill" :src="article.aut_photo" />
         <div class="text">
-          <p class="name">一阵清风</p>
-          <p class="time">两周内</p>
+          <p class="name">{{article.aut_name}}</p>
+          <p class="time">{{article.pubdate | formatTime}}</p>
         </div>
-        <van-button round size="small" type="info">+ 关注</van-button>
+        <van-button
+          round
+          size="small"
+          :type="article.is_followed?'info':'default'"
+        >{{article.is_followed?'取消关注':'+ 关注'}}</van-button>
       </div>
       <div class="content">
-        <p>文章内容文章内容文章内容</p>
+        <p v-html="article.content"></p>
       </div>
       <div class="zan">
         <van-button
           round
           size="small"
-          class="active"
+          :class="{active:article.attitude===1}"
           plain
           icon="like-o"
           style="margin-right:8px;"
         >点赞</van-button>
-        <van-button round size="small" plain icon="delete">不喜欢</van-button>
+        <van-button
+          round
+          size="small"
+          plain
+          icon="delete"
+          :class="{active:article.attitude===0}"
+        >不喜欢</van-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+// 导入获取文章详情的api函数
+import { apiArticleDetail } from '@/api/article.js'
+
 export default {
   // 每个组件name声明的名字【不要】与html标签重名，
   // 例如div、span、table，article、header、footer
-  name: 'com-article'
+  name: 'com-article',
+  data () {
+    return {
+      // 文章详情的数据对象信息
+      article: {}
+    }
+  },
+  created () {
+    this.getArticleDetail()
+  },
+  methods: {
+    // 获取文章的详细数据信息
+    async getArticleDetail () {
+      const result = await apiArticleDetail(this.$route.params.aid)
+      this.article = result
+    }
+  }
 }
 </script>
 
