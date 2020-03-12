@@ -3,9 +3,10 @@
     <van-nav-bar title="搜索中心" left-arrow @click-left="$router.back()" />
     <!-- 搜索框区域 -->
     <!-- v-model: 双向数据绑定，感知/设置 输入框的相关内容 -->
-    <van-search v-model.trim="searchText" placeholder="请输入搜索关键词" />
+    <!-- @search:是van-search组件提供的事件，点击回车键时触发 -->
+    <van-search v-model.trim="searchText" placeholder="请输入搜索关键词" @search="onSearch(searchText)" />
     <van-cell-group>
-      <van-cell v-for="(item,k) in suggestionList" :key="k" icon="search">
+      <van-cell v-for="(item,k) in suggestionList" :key="k" icon="search" @click="onSearch(item)">
         <!-- 因为要应用methods方法，并且该方法返回的信息里边有 html标签+css样式
         所以不要直接使用title属性，相反要应用命名插槽，内部结合v-html应用  v-html:可识别标签-->
         <div slot="title" v-html="highLightCell(item,searchText)"></div>
@@ -58,6 +59,11 @@ export default {
   },
 
   methods: {
+    // 跳转到搜索结果页面的函数
+    onSearch (keywords) {
+      this.$router.push('search/result/' + keywords)
+    },
+
     // 1.创建 关键字 的高亮显示的函数
     // content: 要高亮设置的目标内容  例如:[vue本地项目]
     // keywords: 目标内容中，被匹配的关键字  例如:[Vue]
