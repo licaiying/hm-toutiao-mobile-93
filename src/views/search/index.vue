@@ -5,11 +5,39 @@
     <!-- v-model: 双向数据绑定，感知/设置 输入框的相关内容 -->
     <!-- @search:是van-search组件提供的事件，点击回车键时触发 -->
     <van-search v-model.trim="searchText" placeholder="请输入搜索关键词" @search="onSearch(searchText)" />
-    <van-cell-group>
+    <van-cell-group v-if="suggestionList.length>0">
       <van-cell v-for="(item,k) in suggestionList" :key="k" icon="search" @click="onSearch(item)">
         <!-- 因为要应用methods方法，并且该方法返回的信息里边有 html标签+css样式
         所以不要直接使用title属性，相反要应用命名插槽，内部结合v-html应用  v-html:可识别标签-->
         <div slot="title" v-html="highLightCell(item,searchText)"></div>
+      </van-cell>
+    </van-cell-group>
+
+    <van-cell-group v-else>
+      <!-- 历史联想记录 -->
+      <van-cell title="历史记录">
+        <!-- 删除图标
+      slot="right-icon" 命名插槽 给 cell单元格的右边显示内容(垃圾桶图标)
+      name="delete" 垃圾桶图标
+      style="line-height:inherit" 设置内容高度与父级一致
+        -->
+        <van-icon
+          @click="isDeleteData=true"
+          v-show="!isDeleteData"
+          name="delete"
+          slot="right-icon"
+          style="line-height:inherit"
+        ></van-icon>
+        <!-- slot="default" 命名插槽  给单元格定义右侧内容 -->
+        <div v-show="isDeleteData" slot="default">
+          <span style="margin-right:10px">全部删除</span>
+          <span @click="isDeleteData=false">完成</span>
+        </div>
+      </van-cell>
+      <!-- 历史联想项目数据展示 -->
+      <van-cell title="hello111">
+        <!-- 删除按钮 -->
+        <van-icon v-show="isDeleteData" slot="right-icon" name="close" style="line-height:inherit"></van-icon>
       </van-cell>
     </van-cell-group>
   </div>
@@ -24,7 +52,9 @@ export default {
   data () {
     return {
       searchText: '', // 用户输入的搜索关键字
-      suggestionList: [] // 联想建议数据
+      suggestionList: [], // 联想建议数据
+
+      isDeleteData: false // 联想历史记录是否进入删除状态,true删除状态[全部删除、完成、叉号]，false正常状态[垃圾桶]
     }
   },
 
