@@ -30,14 +30,20 @@
         ></van-icon>
         <!-- slot="default" 命名插槽  给单元格定义右侧内容 -->
         <div v-show="isDeleteData" slot="default">
-          <span style="margin-right:10px">全部删除</span>
+          <span style="margin-right:10px" @click="delAllSuggest()">全部删除</span>
           <span @click="isDeleteData=false">完成</span>
         </div>
       </van-cell>
       <!-- 历史联想项目数据展示 -->
-      <van-cell v-for="(item,k) in suggestHistories" :title="item" :key="k" >
+      <van-cell v-for="(item,k) in suggestHistories" :title="item" :key="k">
         <!-- 删除按钮 -->
-        <van-icon v-show="isDeleteData" slot="right-icon" name="close" style="line-height:inherit"></van-icon>
+        <van-icon
+          v-show="isDeleteData"
+          slot="right-icon"
+          name="close"
+          style="line-height:inherit"
+          @click="delSuggest(k)"
+        ></van-icon>
       </van-cell>
     </van-cell-group>
   </div>
@@ -95,7 +101,24 @@ export default {
   },
 
   methods: {
-    // 跳转到搜索结果页面的函数
+    // 3.全部删除，关键字历史记录
+    delAllSuggest () {
+      // 将历史记录数据，置空(页面级，响应式效果)
+      this.suggestHistories = []
+      // 同时清除，本地中缓存中的数据(持久删除)
+      localStorage.removeItem(SH)
+    },
+
+    // 4.删除某一条，关键字历史记录
+    // 根据其在，历史记录列表中的索引，做删除
+    delSuggest (index) {
+      // 页面级删除，使得有响应式
+      this.suggestHistories.splice(index, 1)
+      // 将清除完的数据，再存储到本地localStorage里
+      localStorage.setItem(SH, JSON.stringify(this.suggestHistories))
+    },
+
+    // 2.跳转到搜索结果页面的函数
     // keywords：代表检索关键字
     onSearch (keywords) {
       // 如果没有关键字的输入，则不需要检索文章
@@ -118,7 +141,7 @@ export default {
       // 将已是 最新的关键字数组集 再存储到本地的localStorage
       localStorage.setItem(SH, JSON.stringify(this.suggestHistories))
 
-      this.$router.push('search/result/' + keywords)
+      this.$router.push('/search/result/' + keywords)
     },
 
     // 1.创建 关键字 的高亮显示的函数

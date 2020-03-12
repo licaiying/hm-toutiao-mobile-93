@@ -43,7 +43,7 @@ export default {
       await this.$sleep(1000)
 
       // 调用api，获取搜索结果
-      const args = { q: this.$route.params.keyword, page: this.page }
+      const args = { q: this.$route.params.keyword, page: this.page, per_page: this.per_page }
       const result = await apiSearchList(args)
       // console.log(result)
 
