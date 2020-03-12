@@ -28,3 +28,24 @@ export function apiUserLogin ({ mobile, code }) {
     }
   })
 }
+
+// 关注作者的api函数
+// target:被关注作者的id
+export function apiFollow (target) {
+  return request({
+    url: '/app/v1_0/user/followings',
+    method: 'post',
+    data: {
+      target
+    }
+  })
+}
+
+// 取消关注的api函数
+// target:被取消关注作者的id
+export function apiUnFollow (target) {
+  return request({
+    url: '/app/v1_0/user/followings/' + target,
+    method: 'delete'
+  })
+}
