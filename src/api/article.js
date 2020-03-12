@@ -41,3 +41,12 @@ export function apiArticleReport ({ articleID, type, remark = '' }) {
     }
   })
 }
+
+// 4.获取文章详情的api函数
+// 需要以文章的id作为参数
+export function apiArticleDetail (articleID) {
+  return request({
+    method: 'get',
+    url: '/app/v1_0/articles/' + articleID
+  })
+}
