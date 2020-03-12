@@ -35,7 +35,7 @@
         </div>
       </van-cell>
       <!-- 历史联想项目数据展示 -->
-      <van-cell title="hello111">
+      <van-cell v-for="(item,k) in suggestHistories" :title="item" :key="k" >
         <!-- 删除按钮 -->
         <van-icon v-show="isDeleteData" slot="right-icon" name="close" style="line-height:inherit"></van-icon>
       </van-cell>
@@ -47,6 +47,9 @@
 // 导入获取“联想关键字”的api
 import { apiSearchSuggestion } from '@/api/search.js'
 
+// 设置关键字历史记录的localStorage的key的名称，方便后续使用
+const SH = 'suggest-histories'
+
 export default {
   name: 'search-index',
   data () {
@@ -54,7 +57,10 @@ export default {
       searchText: '', // 用户输入的搜索关键字
       suggestionList: [], // 联想建议数据
 
-      isDeleteData: false // 联想历史记录是否进入删除状态,true删除状态[全部删除、完成、叉号]，false正常状态[垃圾桶]
+      isDeleteData: false, // 联想历史记录是否进入删除状态,true删除状态[全部删除、完成、叉号]，false正常状态[垃圾桶]
+
+      // 获取本地存储的联想历史数据,判断本地如果有数据直接使用，否则设置[]空数组
+      suggestHistories: JSON.parse(localStorage.getItem(SH) || '[]')
     }
   },
 
@@ -90,7 +96,28 @@ export default {
 
   methods: {
     // 跳转到搜索结果页面的函数
+    // keywords：代表检索关键字
     onSearch (keywords) {
+      // 如果没有关键字的输入，则不需要检索文章
+      if (!keywords) {
+        return false // 停止后续代码执行
+      }
+
+      // 若检索到了关键字，将其存储到本地了，方便以后检索的历史记录的展示
+      // 存储的关键字，不能重复，若是重复的关键字，则就不存储了
+      // 使用Set方法，可以使得存储的关键字都是唯一的
+
+      // 将data中获取到的本地的关键字集合，转换为Set集合，以便再做关键字添加的时候，重复的就不添加了，也就不做存储了
+      const res = new Set(this.suggestHistories)
+      // 将新的关键字添加到Set集合里
+      res.add(keywords) // 若是重复的关键字，则添加失败
+
+      // 把已添加了 新的关键字 的集合转换为Array数组,并赋予给data的suggestHistories成员,使得页面有响应式效果
+      this.suggestHistories = Array.from(res)
+
+      // 将已是 最新的关键字数组集 再存储到本地的localStorage
+      localStorage.setItem(SH, JSON.stringify(this.suggestHistories))
+
       this.$router.push('search/result/' + keywords)
     },
 
