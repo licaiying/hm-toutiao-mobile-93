@@ -23,7 +23,12 @@
       <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
         <!-- van-cell：单元格组件，独占一行，显示每一条数据 -->
         <!-- art_id:是超大整形数据，是数字类型，需要转换为字符串 -->
-        <van-cell v-for="item in articleList" :key="item.art_id.toString()" :title="item.title">
+        <van-cell
+          v-for="item in articleList"
+          :key="item.art_id.toString()"
+          :title="item.title"
+          @click="$router.push({name:'article',params:{aid:item.art_id.toString()}})"
+        >
           <!-- 通过命名插槽方式体现单元格下方描述信息 -->
           <template slot="label">
             <!-- 宫格组价 -->
@@ -42,11 +47,16 @@
             </van-grid>
             <!-- 文字描述信息 -->
             <!--  van-icon:图标组件   name="close"代表叉号 -->
+            <!-- 加.stop的原因：
+                外部已经有click事件了，内部还有click事件
+                内部的click执行的时候，外部也会执行，导致内部失效，这是事件冒泡体现
+                处理：阻止事件冒泡
+            .stop是vue内部的修饰符，可以阻止事件冒泡-->
             <p>
               <van-icon
                 name="close"
                 style="float:right"
-                @click="displayDialog(item.art_id.toString())"
+                @click.stop="displayDialog(item.art_id.toString())"
               />
               <span>作者:{{item.aut_name}}</span>
               &nbsp;
