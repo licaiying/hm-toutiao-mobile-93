@@ -75,7 +75,7 @@
     <div class="reply-container van-hairline--top">
       <van-field v-model.trim="contentCorR" placeholder="写评论或回复...">
         <!-- slot="button"命名插槽，表明要给van-field的指定位置填充内容，button是输入框的右侧-->
-        <van-button size="mini" :loading="submitting" slot="button">提交</van-button>
+        <van-button size="mini" :loading="submitting" slot="button" @click="add()">提交</van-button>
       </van-field>
     </div>
   </div>
@@ -83,7 +83,8 @@
 
 <script type="text/javascript">
 // 导入获取回复数据的api
-import { apiReplyList } from '@/api/reply.js'
+// 导入 添加评论/回复 信息的api方法
+import { apiReplyList, apiAddCorR } from '@/api/reply.js'
 
 // 导入获取文章评论的api函数
 import { apiCommentList } from '@/api/comment.js'
@@ -117,6 +118,62 @@ export default {
     }
   },
   methods: {
+    // 添加评论或回复--------------------------------------------------
+    // 如何判断当前要做"评论"还是"回复",判断showReply:true回复(为true时，会打开回复的弹出层)     false评论
+    async add () {
+      // 若添加的内容为空时，不做任何处理
+      if (this.contentCorR === '') {
+        this.$toast.fail('请输入一些内容！')
+        return false
+      }
+
+      // 开启提交数据时的动画效果
+      // 注意点：不能放到延迟器的下方
+      this.submitting = true
+
+      // 延迟效果
+      await this.$sleep(1000)
+
+      // 若添加操作为---回复
+      if (this.showReply) {
+        const result = await apiAddCorR({
+          target: this.commentID, // 评论的id
+          content: this.contentCorR,
+          artID: this.$route.params.aid // 文章的id
+        })
+        // console.log(result) // {com_id: BigNumber, target: BigNumber, art_id: 22773, new_obj: {…}}
+        // new_obj:为最新添加的数据信息
+
+        // 将添加的数据追加到回复数据的头部
+        this.replyList.unshift(result.new_obj)
+
+        // 新数据添加到回复的数据里，回复的总记录数要做累加
+        // 获得当前评论的下标信息
+        // findIndex()遍历数组，根据条件找到某个元素的下标
+        const index = this.commentList.findIndex(item => {
+          // item:代表评论数组里的每一个元素
+          return item.com_id.toString() === this.commentID
+        })
+        // 通过index找到目标评论，对reply_count做累加----(请求返回的结果里的字段：reply_count：代表：回复的数量)
+        this.commentList[index].reply_count++
+      } else {
+        // 若添加操作为---评论
+        const result = await apiAddCorR({
+          target: this.$route.params.aid, // 文章的id
+          content: this.contentCorR
+        })
+        // console.log(result) // {com_id: BigNumber, target: BigNumber, art_id: 22773, new_obj: {…}}
+        // new_obj:为最新添加的数据信息
+
+        // 将添加的数据追加到评论数据的头部
+        this.commentList.unshift(result.new_obj)
+      }
+
+      // 添加完数据后，将输入框清空
+      this.contentCorR = ''
+      this.submitting = false // 恢复按钮为正常状态
+    },
+
     // 单击回复标志，展示回复弹出层逻辑--------------------------------------
     // 参数comID：传递过来的，被激活的评论id，需接收
     openReply (comID) {
