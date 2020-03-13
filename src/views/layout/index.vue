@@ -8,9 +8,29 @@
     @click-right：右侧文字单击后发生的事件
     fixed：固定定位，定位到页面头部，是样式体现(postion:fixed;top:0;left:0;)
     -->
-    <van-nav-bar fixed title="黑马头条" right-text="搜索" @click-right="$router.push('/search')" />
+    <!-- 该头部，在个人中心里边不要显示
+         个人中心路由地址：/user
+         判断当前路由不等于/user   才显示
+    -->
+    <van-nav-bar
+      fixed
+      title="黑马头条"
+      right-text="搜索"
+      @click-right="$router.push('/search')"
+      v-if="$route.path!=='/user'"
+    />
 
-    <div class="my-wrapper">
+    <!-- 第一种方式 -->
+    <!-- 如果现在是个人中心，这my-wrapper的向上内边距要清除 -->
+    <!-- <div class="my-wrapper" :style="{'padding-top':$route.path==='/user'?0:'46px'}"> -->
+
+    <!-- 第二种方式 -->
+    <!--
+        当前是个人中心：class="my-wrapper noTop"  增加“noTop”的类名
+        当前不是个人中心：class="my-wrapper"   不增加“noTop”的类名
+        noTop在下方的style样式里边有设置padding-top:0
+    -->
+    <div class="my-wrapper" :class="{noTop:$route.path=='/user'}">
       <!--路由占位符，用于显示 home、question、video、user的组件的-->
       <router-view></router-view>
     </div>
