@@ -70,6 +70,14 @@
         </van-cell>
       </van-list>
     </van-popup>
+
+    <!-- 添加评论或回复的小构件 -->
+    <div class="reply-container van-hairline--top">
+      <van-field v-model.trim="contentCorR" placeholder="写评论或回复...">
+        <!-- slot="button"命名插槽，表明要给van-field的指定位置填充内容，button是输入框的右侧-->
+        <van-button size="mini" :loading="submitting" slot="button">提交</van-button>
+      </van-field>
+    </div>
   </div>
 </template>
 
@@ -101,7 +109,11 @@ export default {
         list: [],
         loading: false, // 瀑布动画
         finished: false // 瀑布停止标志
-      }
+      },
+
+      // 添加评论或回复成员------------------------------------------------
+      contentCorR: '', // 内容
+      submitting: false // 是否正在提交
     }
   },
   methods: {
@@ -217,5 +229,16 @@ export default {
       width: 400px;
     }
   }
+}
+
+// 添加评论或回复构件
+.reply-container {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 88px;
+  width: 100%;
+  background: #f5f5f5;
+  z-index: 9999;
 }
 </style>
