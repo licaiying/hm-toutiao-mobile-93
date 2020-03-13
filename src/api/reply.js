@@ -1,15 +1,15 @@
-// 评论数据的获取文件
+// 评论的回复数据的获取文件
 
 // 导入axios
 import request from '@/utils/request.js'
 
-// 获取文章评论的api函数
+// 获取评论回复的api函数
 // 接口：【获取评论或评论回复】
 /**
-   * 获得"评论"列表
+   * 获得"评论的回复"列表
    * type 是 a或c 评论类型，a-对文章(article)的评论，c-对评论(comment)的回复
-   * source:articleID 是  源id，文章id
-   * offset 否  获取评论数据的【偏移量】，值为评论id，表示从此id的数据向后取，
+   * source:commentID 是  源id，评论id
+   * offset 否  获取回复数据的【偏移量】，值为回复的id，表示从此id的数据向后取，
    *            不传表示从第一页开始读取数据
    *            offset实现分页效果：
    *            offset=null       获得第1页数据，数据回来有一个last_id字段
@@ -23,16 +23,16 @@ import request from '@/utils/request.js'
    *        offset=15    获得第4页的5条数据,last_id=20 (id>15)
    *        ……
    *        offset=偏移量    获得第n页的5条数据,last_id=20 (id>offset)
-   * limit 否  获取的评论数据个数，不传表示采用后端服务设定的默认每页数据量
+   * limit 否  获取的回复数据个数，不传表示采用后端服务设定的默认每页数据量
    */
-export function apiCommentList ({ articleID, offset }) {
+export function apiReplyList ({ commentID, lastID }) {
   return request({
     url: '/app/v1_0/comments',
     method: 'get',
     params: {
-      type: 'a', // 对文章进行评论
-      source: articleID, // 文章的id
-      offset, // 分页数据
+      type: 'c', // 获得回复的列表标志
+      source: commentID, // 评论的id
+      offset: lastID, // 偏移量，分页使用
       limit: 10
     }
   })

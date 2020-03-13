@@ -34,7 +34,9 @@
           <p>
             <span>{{item.pubdate | formatTime}}</span>
             ·
-            <span @click="showReply=true">{{item.reply_count}}&nbsp;回复</span>
+            <span
+              @click="openReply(item.com_id.toString())"
+            >{{item.reply_count}}&nbsp;回复</span>
           </p>
         </div>
       </van-cell>
@@ -49,20 +51,20 @@
         finished-text="没有更多了"
         @load="onLoadReply"
       >
-        <van-cell v-for="item in reply.list" :key="item" :title="item">
+        <van-cell v-for="item in replyList" :key="item.com_id.toString()">
           <!-- 作者头像 -->
           <div slot="icon">
-            <img class="avatar" src="http://toutiao.meiduo.site/Fn6-mrb5zLTZIRG3yH3jG8HrURdU" alt />
+            <img class="avatar" :src="item.aut_photo" alt />
           </div>
           <!-- 作者名称 -->
           <div slot="title">
-            <span>度娘</span>
+            <span>{{item.aut_name}}</span>
           </div>
           <!-- 回复内容和时间 -->
           <div slot="label">
-            <p>好厉害呀</p>
+            <p>{{item.content}}</p>
             <p>
-              <span>2019-12-30 15:15:15</span>
+              <span>{{item.pubdate | formatTime}}</span>
             </p>
           </div>
         </van-cell>
@@ -72,6 +74,9 @@
 </template>
 
 <script type="text/javascript">
+// 导入获取回复数据的api
+import { apiReplyList } from '@/api/reply.js'
+
 // 导入获取文章评论的api函数
 import { apiCommentList } from '@/api/comment.js'
 
@@ -83,12 +88,15 @@ export default {
       list: [], // demo数据
       loading: false, // 瀑布动画控制
       finished: false, // 瀑布停止控制
-      commentList: [], // 评论列表
-      offset: null, // 分页偏移量数据
+      commentList: [], // 评论列表数据
+      offset: null, // 评论的分页偏移量数据
 
       // 回复瀑布相关成员--------------------------------------------
       // 通过reply成员包围，使得与外部的评论瀑布成员没有冲突
       showReply: false, // 回复弹出层是否展示
+      replyList: [], // 回复列表数据
+      commentID: '', // 被点击时，激活的评论的id
+      lastID: null, // 回复的分页标志(null、前一次返回的last_id)
       reply: {
         list: [],
         loading: false, // 瀑布动画
@@ -97,23 +105,58 @@ export default {
     }
   },
   methods: {
+    // 单击回复标志，展示回复弹出层逻辑--------------------------------------
+    // 参数comID：传递过来的，被激活的评论id，需接收
+    openReply (comID) {
+      this.commentID = comID // 评论的id
+      this.showReply = true // 点击时，打开弹出层
+
+      // 每次打开回复弹出层都要做初始化操作，把之前旧的"痕迹"都清除，使得新的回复信息得以展示
+      this.replyList = [] // 旧的回复数据清除
+      this.lastID = null // 恢复分页偏移量
+      this.reply.finished = false // 激活瀑布
+    },
+
     // 回复瀑布加载---------------------------------------
-    onLoadReply () {
+    async onLoadReply () {
+      // 延迟效果(0.8秒)
+      await this.$sleep(800)
+
+      // 获取回复的列表数据信息
+      const result = await apiReplyList({
+        commentID: this.commentID, // 评论的id
+        lastID: this.lastID
+      })
+
+      // 获取到数据后，停止动画效果
+      this.reply.loading = false
+
+      // 若没有获取到数据
+      if (result.results.length === 0) {
+        this.reply.finished = true // 停止瀑布动画
+        return false // 停止后续代码的执行
+      }
+
+      // 获取到数据
+      // 将获取到的数据追加到data成员中的replyList数组中
+      this.replyList.push(...result.results)
+      this.lastID = result.last_id // 分页偏移量的更新
+
       // 异步更新数据
       // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.reply.list.push(this.reply.list.length + 1)
-        }
+      //   setTimeout(() => {
+      //     for (let i = 0; i < 10; i++) {
+      //       this.reply.list.push(this.reply.list.length + 1)
+      //     }
 
-        // 加载状态结束
-        this.reply.loading = false
+      //     // 加载状态结束
+      //     this.reply.loading = false
 
-        // 数据全部加载完成
-        if (this.reply.list.length >= 40) {
-          this.reply.finished = true
-        }
-      }, 1000)
+      //     // 数据全部加载完成
+      //     if (this.reply.list.length >= 40) {
+      //       this.reply.finished = true
+      //     }
+      //   }, 1000)
     },
 
     // 评论瀑布加载---------------------------------------
