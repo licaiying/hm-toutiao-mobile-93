@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-     <!--头部导航-->
+    <!--头部导航-->
     <!-- 公共头部
     van-nav-bar是 导航栏组件，
     title：导航中间呈现内容
@@ -15,7 +15,7 @@
       <router-view></router-view>
     </div>
 
-  <!--底部导航-->
+    <!--底部导航-->
     <!-- 公共脚步
       van-tabbar:标签栏组件
       van-tabbar: route  激活路由功能
@@ -27,7 +27,10 @@
       <van-tabbar-item to="/home" icon="home-o">首页</van-tabbar-item>
       <van-tabbar-item to="/question" icon="chat-o">问答</van-tabbar-item>
       <van-tabbar-item to="/video" icon="video-o">视频</van-tabbar-item>
-      <van-tabbar-item to="/user" icon="user-o">我的</van-tabbar-item>
+      <van-tabbar-item
+        :to="$store.state.user.token?'/user':'/login'"
+        icon="user-o"
+      >{{$store.state.user.token?'我的':'未登录'}}</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
