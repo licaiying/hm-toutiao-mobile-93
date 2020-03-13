@@ -37,3 +37,24 @@ export function apiReplyList ({ commentID, lastID }) {
     }
   })
 }
+
+// 添加评论或回复内容的api函数
+// 接口：【添加评论或评论回复】
+/**
+ * 添加评论或回复内容，一个api承接两个动作
+ * target integer 必须  评论的目标id（评论文章即为文章id，对评论进行回复则为评论id）
+ * content string 必须  评论内容
+ * art_id integer 非必须  【文章id】，添加回复，需要传递此参数
+ *                                    添加评论，不要传此参数
+ */
+export function apiAddCorR ({ target, content, artID = null }) {
+  return request({
+    url: '/app/v1_0/comments',
+    method: 'post',
+    data: {
+      target,
+      content, // 评论或回复的内容
+      art_id: artID
+    }
+  })
+}
