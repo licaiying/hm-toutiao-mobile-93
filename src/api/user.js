@@ -49,3 +49,12 @@ export function apiUnFollow (target) {
     method: 'delete'
   })
 }
+
+// 个人中心：获得用户基本信息的api函数
+// 接口：【获取用户自己信息】
+export function apiUserInfo () {
+  return request({
+    method: 'get',
+    url: '/app/v1_0/user'
+  })
+}
