@@ -38,11 +38,17 @@
           :class="{active:article.attitude===0}"
         >不喜欢</van-button>
       </div>
+
+      <!-- 子组件评论列表展示区域 -->
+      <com-comment></com-comment>
     </div>
   </div>
 </template>
 
 <script>
+// 导入 评论的子组件
+import ComComment from './components/com-comment'
+
 // 导入获取文章详情的api函数
 import { apiArticleDetail } from '@/api/article.js'
 
@@ -53,6 +59,7 @@ export default {
   // 每个组件name声明的名字【不要】与html标签重名，
   // 例如div、span、table，article、header、footer
   name: 'com-article',
+  components: { ComComment },
   data () {
     return {
       // 文章详情的数据对象信息
