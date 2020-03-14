@@ -21,7 +21,8 @@
 
     <!-- 头像的弹出层 -->
     <van-popup v-model="showPhoto" position="bottom">
-      <van-cell title="本地相册选择图片" is-link></van-cell>
+      <!--单击后要触发上传头像表单域的click事件执行，就是要展开选取图片的框框  通过间接触发执行-->
+      <van-cell title="本地相册选择图片" is-link @click="$refs.mypic.click()"></van-cell>
       <van-cell title="拍照" is-link></van-cell>
     </van-popup>
 
@@ -63,6 +64,18 @@
         @cancel="showBirthday=false"
       ></van-datetime-picker>
     </van-popup>
+
+    <!-- 隐藏状态的---头像上传表单域 -->
+    <!-- ref：可以这样 this.$refs.mypic  方式获得到当前input的元素对象
+         如果不通过ref，也可以通过其他方式获取，
+         例如id  document.getElementById('pic')
+         ref和id 方式获得的元素对象本质完全一样
+        上传表单域自带click，不用声明
+
+        @change：事件，感知表单域的变化信息，并做收集处理
+        style="display:none; 让该表单域隐藏，不去显示
+    -->
+    <input type="file" ref="mypic" id="pic" @change="startUpload()" style="display:none;" />
   </div>
 </template>
 
@@ -71,7 +84,8 @@
 import dayjs from 'dayjs'
 
 // 导入获取“用户个人资料的”api函数
-import { apiUserProfile } from '@/api/user.js'
+// 导入 上传用户头像 的api函数
+import { apiUserProfile, apiUserPhoto } from '@/api/user.js'
 
 export default {
   name: 'user-profile',
@@ -102,6 +116,35 @@ export default {
     this.getUserProfile()
   },
   methods: {
+    // 开始上传头像
+    // 头像图片选取好了，该函数会自动触发执行
+    async startUpload () {
+      // console.dir() 可以输出元素对象的各个子成员
+      // console.dir(this.$refs.mypic) // 输出上传文件域对象, 包含files成员  files: FileList {0: File, length: 1}
+      // this.$refs.mypic：获得type="file" 的上传附件表单域的dom对象
+      // this.$refs.mypic.files[0] ：获得上传图片的对象内容
+
+      // 1. 获得上传好的图片对象
+      const photoObj = this.$refs.mypic.files[0]
+
+      // 2. 把图片对象 整合到FormData
+      const fd = new FormData()
+      fd.append('photo', photoObj) // photo 是接口文章要求的参数名称
+
+      // 3. 把FormData给到api函数，提交给服务器端
+      const result = await apiUserPhoto(fd)
+
+      // 把服务器端上传好并返回的头像信息更新显示到页面上
+      // 本质给到userprofile.photo
+      this.userProfile.photo = result.photo
+
+      // 成功的提示信息
+      this.$toast.success('头像更新成功!')
+
+      // 关闭弹出层
+      this.showPhoto = false
+    },
+
     // 时间选择器，确认选取时间了----------------------------------------
     // val:代表当前选中的时间，根据组件提供的 confirm事件中可知
     onConfirm (val) {

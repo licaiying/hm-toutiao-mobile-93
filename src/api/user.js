@@ -85,8 +85,6 @@ export function apiUserPhoto (fdObj) {
   return request({
     url: '/app/v1_0/user/photo',
     method: 'patch',
-    data: {
-      photo: fdObj
-    }
+    data: fdObj
   })
 }
