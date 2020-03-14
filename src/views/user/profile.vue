@@ -15,7 +15,7 @@
         <van-image slot="default" round width="56" height="56" fit="cover" :src="userProfile.photo"></van-image>
       </van-cell>
       <van-cell title="名称" is-link :value="userProfile.name" @click="showName=true"></van-cell>
-      <van-cell title="性别" is-link :value="userProfile.gender===0?'男':'女'"></van-cell>
+      <van-cell title="性别" is-link :value="userProfile.gender===0?'男':'女'" @click="showGender=true"></van-cell>
       <van-cell title="生日" is-link :value="userProfile.birthday"></van-cell>
     </van-cell-group>
 
@@ -29,6 +29,19 @@
     <van-popup v-model="showName" position="bottom">
       <van-field v-model.trim="userProfile.name" type="textarea" rows="3"></van-field>
     </van-popup>
+
+    <!-- 性别的弹出层(上拉菜单)
+         v-model="showGender" 设置弹层是否显示
+         :actions="genderMeuns" 设定上拉菜单项目的
+         @select="onSelect" 单击到某一个菜单项目后的回调处理：收起菜单，选中项目
+         cancel-text="取消" 设置有取消按钮提示
+    -->
+    <van-action-sheet
+      v-model="showGender"
+      :actions="genderMeuns"
+      @select="onSelect"
+      cancel-text="取消"
+    ></van-action-sheet>
   </div>
 </template>
 
@@ -42,6 +55,10 @@ export default {
     return {
       showPhoto: false, // 头像的弹出层开关
       showName: false, // 昵称的弹出层开关
+      showGender: false, // 性别的弹出层开关
+
+      genderMeuns: [{ name: '男' }, { name: '女' }], // 性别的菜单选项,语法结构固定，name属性固定
+
       // 用户个人资料的信息列表
       userProfile: {
         name: '',
@@ -55,6 +72,16 @@ export default {
     this.getUserProfile()
   },
   methods: {
+    // 性别选择后的回调处理函数----------------------------------------
+    onSelect (val) {
+      // val: 代表被选中项目的对象数据
+      // console.log(val) // {name:'男'}
+
+      // 对val进行处理，然后赋值给data表单成员(其接受数字的性别)
+      this.userProfile.gender = val.name === '男' ? 0 : 1
+      this.showGender = false // 关闭弹出层
+    },
+
     // 获取用户个人资料的函数------------------------------------
     async getUserProfile () {
       this.userProfile = await apiUserProfile()
