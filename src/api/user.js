@@ -88,3 +88,23 @@ export function apiUserPhoto (fdObj) {
     data: fdObj
   })
 }
+
+// 7.编辑用户个人资料
+// 接口：【编辑用户个人资料（包含实名认证）】
+/**
+ * name: 昵称  string
+ * gender:  性别，0-男，1-女
+ * birthday: 生日，格式'2018-12-20'
+ * 注意：photo头像不用处理，上传的时候都处理好了
+ */
+export function apiUserSaveProfile ({ name, gender, birthday }) {
+  return request({
+    url: '/app/v1_0/user/profile',
+    method: 'patch',
+    data: {
+      name,
+      gender,
+      birthday
+    }
+  })
+}
