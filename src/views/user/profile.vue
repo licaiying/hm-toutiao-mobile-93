@@ -14,7 +14,7 @@
       <van-cell title="头像" is-link center @click="showPhoto=true">
         <van-image slot="default" round width="56" height="56" fit="cover" :src="userProfile.photo"></van-image>
       </van-cell>
-      <van-cell title="名称" is-link :value="userProfile.name"></van-cell>
+      <van-cell title="名称" is-link :value="userProfile.name" @click="showName=true"></van-cell>
       <van-cell title="性别" is-link :value="userProfile.gender===0?'男':'女'"></van-cell>
       <van-cell title="生日" is-link :value="userProfile.birthday"></van-cell>
     </van-cell-group>
@@ -23,6 +23,11 @@
     <van-popup v-model="showPhoto" position="bottom">
       <van-cell title="本地相册选择图片" is-link></van-cell>
       <van-cell title="拍照" is-link></van-cell>
+    </van-popup>
+
+    <!-- 昵称的弹出层 -->
+    <van-popup v-model="showName" position="bottom">
+      <van-field v-model.trim="userProfile.name" type="textarea" rows="3"></van-field>
     </van-popup>
   </div>
 </template>
@@ -36,7 +41,7 @@ export default {
   data () {
     return {
       showPhoto: false, // 头像的弹出层开关
-
+      showName: false, // 昵称的弹出层开关
       // 用户个人资料的信息列表
       userProfile: {
         name: '',
