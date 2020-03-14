@@ -71,3 +71,22 @@ export function apiUserProfile () {
     method: 'get'
   })
 }
+
+// 6.上传用户头像的api
+// 接口：【编辑用户照片资料（头像、身份证照片）】
+/**
+ * 对用户头像进行更新
+ * patch：代表对众多的字段中"几个"来更新
+ * put: 对"全部"字段做更新
+ * 参数的类型：file {FormData对象，里边有附件信息，photo代表头像}
+ * @param fdObj
+ */
+export function apiUserPhoto (fdObj) {
+  return request({
+    url: '/app/v1_0/user/photo',
+    method: 'patch',
+    data: {
+      photo: fdObj
+    }
+  })
+}
