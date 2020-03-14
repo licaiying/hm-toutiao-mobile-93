@@ -16,7 +16,7 @@
       </van-cell>
       <van-cell title="名称" is-link :value="userProfile.name" @click="showName=true"></van-cell>
       <van-cell title="性别" is-link :value="userProfile.gender===0?'男':'女'" @click="showGender=true"></van-cell>
-      <van-cell title="生日" is-link :value="userProfile.birthday"></van-cell>
+      <van-cell title="生日" is-link :value="userProfile.birthday" @click="showBirthday=true"></van-cell>
     </van-cell-group>
 
     <!-- 头像的弹出层 -->
@@ -42,10 +42,34 @@
       @select="onSelect"
       cancel-text="取消"
     ></van-action-sheet>
+
+    <!-- 生日的弹出层(弹出层 + 时间选择器) -->
+    <van-popup v-model="showBirthday" position="bottom">
+      <!-- 时间选择器
+             type="date" ‘年月日’类型选择
+             v-model="currentDate" 默认当前的显示时间
+             :min-date 最小选取时间范围 例：1900年
+             :max-date 最大选取时间范围 现在设置为：当前时间(因为是生日)
+             注意：当前各个时间类型都是  new Date() 对象格式，时间选择器要求的
+             @confirm="onConfirm" 单击确认按钮后的回调处理，可以获得选中的时间信息，注意不要设置()
+             @cancel: 单击取消按钮后的事件处理函数，这里只是将弹出层关闭即可，所以，直接设置成了表达式
+      -->
+      <van-datetime-picker
+        v-model="currentDate"
+        type="date"
+        :min-date="minDate"
+        :max-date="maxDate"
+        @confirm="onConfirm"
+        @cancel="showBirthday=false"
+      ></van-datetime-picker>
+    </van-popup>
   </div>
 </template>
 
 <script>
+// 导入dayjs模块
+import dayjs from 'dayjs'
+
 // 导入获取“用户个人资料的”api函数
 import { apiUserProfile } from '@/api/user.js'
 
@@ -56,8 +80,14 @@ export default {
       showPhoto: false, // 头像的弹出层开关
       showName: false, // 昵称的弹出层开关
       showGender: false, // 性别的弹出层开关
+      showBirthday: false, // 生日的弹出层开关
 
       genderMeuns: [{ name: '男' }, { name: '女' }], // 性别的菜单选项,语法结构固定，name属性固定
+
+      // 时间选择器的相关信息数据
+      currentDate: new Date(), // 当前默认显示的时间
+      minDate: new Date(2008, 0, 1), // 最小选取时间限制（月份是从0开始）
+      maxDate: new Date(2028, 0, 1), // 最大选取时间限制
 
       // 用户个人资料的信息列表
       userProfile: {
@@ -72,7 +102,21 @@ export default {
     this.getUserProfile()
   },
   methods: {
-    // 性别选择后的回调处理函数----------------------------------------
+    // 时间选择器，确认选取时间了----------------------------------------
+    // val:代表当前选中的时间，根据组件提供的 confirm事件中可知
+    onConfirm (val) {
+      // console.log(val) // Tue Jan 01 2008 00:00:00 GMT+0800 (中国标准时间)
+      // console.log(typeof val) // object 是对象格式的
+      // 但是，时间选择器 要求上传的日期格式必须是 年-月-日 格式的  所以需将 对象格式 进行转换
+      // 通过使用dayjs模块，来实现格式的转换 对象格式---> 年-月-日 格式
+
+      this.userProfile.birthday = dayjs(val).format('YYYY-MM-DD')
+      // console.log(dayjs(val))
+
+      this.showBirthday = false // 关闭弹出层
+    },
+
+    // 性别选择后的回调处理函数-----------------------------------------
     onSelect (val) {
       // val: 代表被选中项目的对象数据
       // console.log(val) // {name:'男'}
@@ -82,9 +126,13 @@ export default {
       this.showGender = false // 关闭弹出层
     },
 
-    // 获取用户个人资料的函数------------------------------------
+    // 获取用户个人资料的函数------------------------------------------
     async getUserProfile () {
       this.userProfile = await apiUserProfile()
+
+      // 把用户生日转为 new Date()  格式，赋值给 currentDate
+      // 使得选择器 默认显示
+      this.currentDate = new Date(this.userProfile.birthday)
     }
   }
 }
