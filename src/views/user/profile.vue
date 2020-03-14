@@ -12,25 +12,41 @@
             fit="cover" 对图片做适应 保持宽高缩放图片，使图片的“短边”能完全显示出来，裁剪“长边”
       -->
       <van-cell title="头像" is-link center>
-        <van-image
-          slot="default"
-          round
-          width="56"
-          height="56"
-          fit="cover"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
-        ></van-image>
+        <van-image slot="default" round width="56" height="56" fit="cover" :src="userProfile.photo"></van-image>
       </van-cell>
-      <van-cell title="名称" is-link value="用户名称"></van-cell>
-      <van-cell title="性别" is-link value="男"></van-cell>
-      <van-cell title="生日" is-link value="2019-08-08"></van-cell>
+      <van-cell title="名称" is-link :value="userProfile.name"></van-cell>
+      <van-cell title="性别" is-link :value="userProfile.gender===0?'男':'女'"></van-cell>
+      <van-cell title="生日" is-link :value="userProfile.birthday"></van-cell>
     </van-cell-group>
   </div>
 </template>
 
 <script>
+// 导入获取“用户个人资料的”api函数
+import { apiUserProfile } from '@/api/user.js'
+
 export default {
-  name: 'user-profile'
+  name: 'user-profile',
+  data () {
+    return {
+      // 用户个人资料的信息列表
+      userProfile: {
+        name: '',
+        photo: '',
+        gender: '',
+        birthday: ''
+      }
+    }
+  },
+  created () {
+    this.getUserProfile()
+  },
+  methods: {
+    // 获取用户个人资料的函数------------------------------------
+    async getUserProfile () {
+      this.userProfile = await apiUserProfile()
+    }
+  }
 }
 </script>
 

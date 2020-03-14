@@ -2,7 +2,7 @@
 // request就是经过各种初始配置的axios对象，可以直接使用
 import request from '@/utils/request.js'
 
-// 导出一个函数，可以对用户账号进行校验
+// 1.导出一个函数，可以对用户账号进行校验
 // data: {mobile:xx, code:xx} 对象参数
 // 现在对data做升级，使得在没有任何注释信息的条件下，也直接知道当前api函数需要什么参数，提高开发效率
 // 把参数做成是 “对象解构赋值” 的样子，这样就知道需要哪个参数了
@@ -29,7 +29,7 @@ export function apiUserLogin ({ mobile, code }) {
   })
 }
 
-// 关注作者的api函数
+// 2.关注作者的api函数
 // target:被关注作者的id
 export function apiFollow (target) {
   return request({
@@ -41,7 +41,7 @@ export function apiFollow (target) {
   })
 }
 
-// 取消关注的api函数
+// 3.取消关注的api函数
 // target:被取消关注作者的id
 export function apiUnFollow (target) {
   return request({
@@ -50,11 +50,24 @@ export function apiUnFollow (target) {
   })
 }
 
-// 个人中心：获得用户基本信息的api函数
+// 4.个人中心：获得用户基本信息的api函数
 // 接口：【获取用户自己信息】
 export function apiUserInfo () {
   return request({
     method: 'get',
     url: '/app/v1_0/user'
+  })
+}
+
+// 5.获取用户个人资料的api函数
+// 接口：【获取用户个人资料】
+/**
+ * 编辑资料：获得用户的资料信息，用于修改
+ * 内部自动传递token，可以识别当前的用户
+ */
+export function apiUserProfile () {
+  return request({
+    url: '/app/v1_0/user/profile',
+    method: 'get'
   })
 }
