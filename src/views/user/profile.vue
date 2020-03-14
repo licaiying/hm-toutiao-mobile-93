@@ -11,13 +11,19 @@
             round 使得图片变为圆形
             fit="cover" 对图片做适应 保持宽高缩放图片，使图片的“短边”能完全显示出来，裁剪“长边”
       -->
-      <van-cell title="头像" is-link center>
+      <van-cell title="头像" is-link center @click="showPhoto=true">
         <van-image slot="default" round width="56" height="56" fit="cover" :src="userProfile.photo"></van-image>
       </van-cell>
       <van-cell title="名称" is-link :value="userProfile.name"></van-cell>
       <van-cell title="性别" is-link :value="userProfile.gender===0?'男':'女'"></van-cell>
       <van-cell title="生日" is-link :value="userProfile.birthday"></van-cell>
     </van-cell-group>
+
+    <!-- 头像的弹出层 -->
+    <van-popup v-model="showPhoto" position="bottom">
+      <van-cell title="本地相册选择图片" is-link></van-cell>
+      <van-cell title="拍照" is-link></van-cell>
+    </van-popup>
   </div>
 </template>
 
@@ -29,6 +35,8 @@ export default {
   name: 'user-profile',
   data () {
     return {
+      showPhoto: false, // 头像的弹出层开关
+
       // 用户个人资料的信息列表
       userProfile: {
         name: '',
