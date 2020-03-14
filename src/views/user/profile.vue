@@ -1,6 +1,13 @@
 <template>
   <div class="page-user-profile">
-    <van-nav-bar left-arrow @click-left="$router.back()" title="编辑资料" right-text="保存"></van-nav-bar>
+    <!-- @click-right:是 van-nav-bar 组件提供的点击右侧按钮时触发的函数-->
+    <van-nav-bar
+      left-arrow
+      @click-left="$router.back()"
+      title="编辑资料"
+      right-text="保存"
+      @click-right="save()"
+    ></van-nav-bar>
     <van-cell-group>
       <!-- center:是否使内容垂直居中 -->
       <!--
@@ -85,7 +92,12 @@ import dayjs from 'dayjs'
 
 // 导入获取“用户个人资料的”api函数
 // 导入 上传用户头像 的api函数
-import { apiUserProfile, apiUserPhoto } from '@/api/user.js'
+// 导入 “更新用户资料”的api函数
+import {
+  apiUserProfile,
+  apiUserPhoto,
+  apiUserSaveProfile
+} from '@/api/user.js'
 
 export default {
   name: 'user-profile',
@@ -116,7 +128,14 @@ export default {
     this.getUserProfile()
   },
   methods: {
-    // 开始上传头像
+    // 更新用户资料的处理函数-------------------------------------------------
+    // userProfile已经通过各种弹出层都丰富好了，使用应用即可
+    async save () {
+      await apiUserSaveProfile(this.userProfile)
+      this.$toast.success('更新用户资料成功')
+    },
+
+    // 开始上传头像-------------------------------------------------------
     // 头像图片选取好了，该函数会自动触发执行
     async startUpload () {
       // console.dir() 可以输出元素对象的各个子成员
