@@ -76,6 +76,12 @@ export default {
     this.getUserInfo()
     this.setSocket() // 调用函数，建立连接
   },
+  // beforeDestroy => 生命周期函数  =>  在页面销毁之前触发
+  beforeDestroy () {
+    // 退出聊天区域时，销毁 socket.io 的连接
+    this.socket.close() // socket.close():固定语法，断开socket的连接
+    console.log('断开连接')
+  },
   methods: {
     // 使得 聊天区域 的滚动条始终在最下边显示-----------------------------------
     scrollBottom () {
