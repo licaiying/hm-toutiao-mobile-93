@@ -1,6 +1,7 @@
 <template>
   <!-- div的作用是给瀑布流区域设置“垂直滚动条”，使得可以进行上拉操作 -->
-  <div class="scroll-wrapper">
+  <!-- @scroll:滚动事件 -->
+  <div class="scroll-wrapper" @scroll="remember()" ref="myArticle">
     <!-- 下拉功能 -->
     <!-- v-model="isLoading"：是设置下拉状态的  true：正在加载  false：加载完成
          @refresh="onRefresh"：当发生下拉事件时执行的函数，可以实现数据的获取
@@ -102,6 +103,9 @@ export default {
   },
   data () {
     return {
+      // 记录滚动条，滚动的高度位置
+      qianTop: 0,
+
       // 下拉更新完成的提示信息
       successText: '',
 
@@ -129,7 +133,23 @@ export default {
   created () {
     this.getArticleList()
   },
+
+  // activated： 是keep-alive 组件激活时，自动调用的生命周期钩子方法
+  // activated是生命周期方法，要设置到与created并列的位置
+  activated () {
+    // 当再次返回时(即：再次激活时)，如果记录了滚动条的滚动高度，那么就让文章的卷起高度=该记录的高度
+    if (this.qianTop) {
+      this.$refs.myArticle.scrollTop = this.qianTop
+    }
+  },
   methods: {
+    // 记录滚动条，滚动的位置--------------------------------------------
+    remember () {
+      // 保留滚动条，滚动的位置
+      // 滚动条滚动的高度位置=文章的卷起高度
+      this.qianTop = this.$refs.myArticle.scrollTop
+    },
+
     // 对“不感兴趣”文章的处理函数
     handleDislikeSuccess () {
       // 根据文章的id找到其在文章列表中对应的索引值，实现对该文章的删除操作
