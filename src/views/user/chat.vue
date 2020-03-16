@@ -9,7 +9,7 @@
       </div>
       <div class="chat-item right">
         <div class="chat-pao">没看正忙，挖沙呢</div>
-        <van-image fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <van-image fit="cover" round :src="userInfo.photo" />
       </div>
     </div>
     <div class="reply-container van-hairline--top">
@@ -24,6 +24,9 @@
 // 导入小智的头像
 import XzImg from '@/assets/img/XZ.jpg'
 
+// 导入 【获取用户自己信息】的api函数
+import { apiUserInfo } from '@/api/user.js'
+
 export default {
   name: 'user-chat',
   data () {
@@ -31,7 +34,18 @@ export default {
       content: '', // 即将发表的聊天内容
       isloading: false, // 是否正在提交留言
 
-      XzImg // 小智的头像，简易成员赋值
+      XzImg, // 小智的头像，简易成员赋值
+
+      userInfo: {} // 用户信息,使用{}声明空对象，不要使用null,因为其要在模板在做展示
+    }
+  },
+  created () {
+    this.getUserInfo()
+  },
+  methods: {
+    async getUserInfo () {
+      // 获取用户自己的信息，给头像赋值
+      this.userInfo = await apiUserInfo()
     }
   }
 }
