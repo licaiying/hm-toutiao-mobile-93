@@ -31,8 +31,11 @@
         noTop在下方的style样式里边有设置padding-top:0
     -->
     <div class="my-wrapper" :class="{noTop:$route.path=='/user'}">
-      <!--路由占位符，用于显示 home、question、video、user的组件的-->
-      <router-view></router-view>
+    <!-- 通过keep-alive对路由占位符进行缓存，本质缓存的是内部的各个组件 -->
+      <keep-alive>
+        <!--路由占位符，用于显示 home、question、video、user的组件的-->
+        <router-view></router-view>
+      </keep-alive>
     </div>
 
     <!--底部导航-->
