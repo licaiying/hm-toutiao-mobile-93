@@ -2,7 +2,7 @@
   <!-- 小智同学的页面结构 -->
   <div class="container">
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
-    <div class="chat-list">
+    <div class="chat-list" ref="talkArea">
       <!-- <div class="chat-item left">
         <van-image fit="cover" round :src="XzImg" />
         <div class="chat-pao">干啥呢，河蟹</div>
@@ -77,6 +77,32 @@ export default {
     this.setSocket() // 调用函数，建立连接
   },
   methods: {
+    // 使得 聊天区域 的滚动条始终在最下边显示-----------------------------------
+    scrollBottom () {
+      // 通过算法，使得滚动条跑到最下边
+      // this.$refs.talkArea.scrollHeight // 表示的是：聊天内容区域的实际高度，包括溢出屏幕的部分
+
+      // 滚动条实际卷起的高度
+      // 就是，溢出屏幕的实际高度
+      // this.$refs.talkArea.scrollTop
+
+      // 滚动条最底部设置：scrollTop 等于  scrollHeight-窗口高度  [理论]
+      // scrollTop 等于  scrollHeight 也可以完成这样效果 [实际操作，简便]
+
+      // scrollHeight  (元素内容区域实际高度，包括滚动条的溢出部分)
+      // scrollTop  ( 元素对象实际的最顶端  和  窗口中可见内容的最顶端之间的距离 )
+
+      // this.$nextTick 可以保证：数据变化、视图通过响应式完成了更新，之后再做一些事情
+      // 如果不使用这个技术，造成的后果是：增加聊天记录后，滚动条没有滚动到最底部
+      // 此时流程是这样的、是错误的：数据变化--->滚动条滚动--->视图更新，(滚动条做了一次无用功)
+      // 正确的流程是：数据变化---->视图更新---->滚动条滚动，视图更新后滚动条滚动才会变得有意义
+      // 本身是Vue技术
+
+      this.$nextTick(() => {
+        this.$refs.talkArea.scrollTop = this.$refs.talkArea.scrollHeight
+      })
+    },
+
     // 用户的聊天内容发送的函数---------------------------------------------
     async send () {
       // 若没有聊天内容，则不发送
@@ -94,6 +120,9 @@ export default {
 
       // 将用户的聊天消息 添加到 聊天区域里
       this.talks.push(userLan)
+
+      // 内容添加完之后，滚动条滚动到显示最新内容的位置
+      this.scrollBottom()
 
       // 延迟发送的效果
       await this.$sleep(500)
@@ -145,6 +174,9 @@ export default {
         // 把data存储到talks成员里边
         // this.talks.push({ msg:机器人回复内容,timestamp:回复时间, name: 'xz' })
         this.talks.push({ ...data, name: 'xz' })
+
+        // 内容添加完之后，滚动条滚动到显示最新内容的位置
+        this.scrollBottom()
       })
 
       // 断开连接
