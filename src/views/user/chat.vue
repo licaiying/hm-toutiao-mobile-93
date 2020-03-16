@@ -21,6 +21,9 @@
 </template>
 
 <script>
+// 导入安装好的 socket.io-client 模块
+import io from 'socket.io-client' // 引入socket.io的客户端代码
+
 // 导入小智的头像
 import XzImg from '@/assets/img/XZ.jpg'
 
