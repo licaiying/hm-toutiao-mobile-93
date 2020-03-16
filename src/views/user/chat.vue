@@ -4,7 +4,7 @@
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
     <div class="chat-list">
       <div class="chat-item left">
-        <van-image fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <van-image fit="cover" round :src="XzImg" />
         <div class="chat-pao">干啥呢，河蟹</div>
       </div>
       <div class="chat-item right">
@@ -21,12 +21,17 @@
 </template>
 
 <script>
+// 导入小智的头像
+import XzImg from '@/assets/img/XZ.jpg'
+
 export default {
   name: 'user-chat',
   data () {
     return {
       content: '', // 即将发表的聊天内容
-      isloading: false // 是否正在提交留言
+      isloading: false, // 是否正在提交留言
+
+      XzImg // 小智的头像，简易成员赋值
     }
   }
 }
