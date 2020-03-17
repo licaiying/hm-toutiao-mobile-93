@@ -11,7 +11,7 @@ export default new Vuex.Store({
     user: JSON.parse(localStorage.getItem(USER_KEY) || '{}')
   },
   mutations: {
-    // 修改/更新用户信息
+    // 修改/更新用户信息----------------------------------
     // data:{token:xx,refresh_token:xx}
     updateUser (state, data) {
       // 1. vuex做更新，使得有响应式
@@ -19,12 +19,16 @@ export default new Vuex.Store({
       // 2. localStorage做持久更新
       localStorage.setItem(USER_KEY, JSON.stringify(data))
     },
-    // 清除用户信息
+    // 清除用户信息---------------------------------------
     clearUser (state) {
       // 1. vuex做清除，使得有响应式
       state.user = {}
       // 2. localStorage做持久清除
       localStorage.removeItem(USER_KEY)
+    },
+    // 删除用户的token
+    clearToken (state) {
+      delete state.user.token
     }
   },
   actions: {
